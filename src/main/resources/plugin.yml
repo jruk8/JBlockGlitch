@@ -4,3 +4,19 @@ main: ${main}
 api-version: "${apiVersion}"
 author: ${author}
 description: ${description}
+website: ${website}
+depend:
+  - WorldGuard
+
+commands:
+  help:
+    description: Show JBlockGlitch documentation
+    usage: /jblockglitch:help
+    aliases:
+      - jbg
+    permission: jblockglitch.help
+
+permissions:
+  jblockglitch.help:
+    description: View JBlockGlitch documentation
+    default: true

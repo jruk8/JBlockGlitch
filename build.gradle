@@ -17,10 +17,16 @@ repositories {
     maven {
         url = 'https://repo.papermc.io/repository/maven-public/'
     }
+    maven {
+        url = 'https://maven.enginehub.org/repo/'
+    }
 }
 
 dependencies {
     compileOnly "io.papermc.paper:paper-api:${paperApiVersion}"
+    compileOnly("com.sk89q.worldguard:worldguard-bukkit:${worldGuardVersion}") {
+        transitive = false
+    }
 
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.10.2'
@@ -51,7 +57,8 @@ processResources {
         main: pluginMain,
         apiVersion: paperApiVersion.split('\\.build\\.')[0],
         author: pluginAuthor,
-        description: pluginDescription
+        description: pluginDescription,
+        website: pluginWebsite
     ]
     inputs.properties(pluginProperties)
     filesMatching('plugin.yml') {
