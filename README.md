@@ -1,3 +1,4 @@
+![JBlockGlitch banner](JBlockGlitch-banner-1280x640.png)
 # JBlockGlitch
 
 JBlockGlitch is a small Paper plugin that prevents players from using denied
@@ -17,6 +18,20 @@ Contribute: https://github.com/jruk8/JBlockGlitch
 When WorldGuard denies a block placement, the plugin immediately resends the
 real block state to the player and briefly prevents the upward movement that
 can otherwise be triggered by the client-side ghost block.
+
+## Demonstration without the fix
+
+This 10-second demonstration shows the block-placement glitch before
+JBlockGlitch is installed.
+
+![Block glitch without JBlockGlitch](demos/without-fix.gif)
+
+## Demonstration with the fix
+
+This 10-second demonstration shows the same placement attempt with
+JBlockGlitch installed.
+
+![Block glitch fixed by JBlockGlitch](demos/with-fix.gif)
 
 ## Commands
 
