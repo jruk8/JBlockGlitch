@@ -1,33 +1,35 @@
-# Paper plugin template
+# JBlockGlitch
 
-A minimal, buildable starting point for Paper plugins using Gradle and Java 25.
-It intentionally provides no commands, listeners, configuration, or other plugin
-features.
+JBlockGlitch is a small Paper plugin that prevents players from using denied
+block placements to climb through WorldGuard-protected regions.
 
-## Start a plugin
+Download: https://modrinth.com/plugin/jblockglitch
 
-1. Create a repository from this template.
-2. Update the plugin values in `gradle.properties`.
-3. Rename the example package and `PaperTemplatePlugin` class to match the
-   `pluginMain` value.
-4. Change `rootProject.name` in `settings.gradle`.
-5. Add your plugin code and metadata. Commands and permissions belong in
-   `src/main/resources/plugin.yml`.
-6. Choose a license before publishing your project.
+Contribute: https://github.com/jruk8/JBlockGlitch
 
-## Build
+## Requirements
 
-Java 25 is required. Gradle can use a locally installed matching toolchain.
+- Paper 26.2
+- Java 25
+- WorldGuard 7.0.17
+- WorldEdit, installed as a WorldGuard dependency
 
-```shell
-./gradlew build
-```
+When WorldGuard denies a block placement, the plugin immediately resends the
+real block state to the player and briefly prevents the upward movement that
+can otherwise be triggered by the client-side ghost block.
 
-On Windows:
+## Commands
 
-```powershell
-.\gradlew.bat build
-```
+| Command | Permission | Notes |
+| --- | --- | --- |
+| `/jblockglitch:help` | `jblockglitch.help` | Shows basic plugin documentation. |
+| `/jbg` | `jblockglitch.help` | Short alias for `/jblockglitch:help`. |
 
-The plugin jar is written to `build/libs/`. The included GitHub Actions workflow
-runs the same build for pushes and pull requests.
+The help message is configured in `messages.yml` as a multiline list. Messages
+use MiniMessage formatting by default. Set `text-format: legacy` in
+`config.yml` to use legacy `&` color codes instead.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for build instructions and contributor
+setup.
+
+© 2026 jruk8. Licensed under GNU GPLv3.
