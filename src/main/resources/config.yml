@@ -1,0 +1,3 @@
+# Controls how messages.yml values are interpreted.
+# Supported values: minimessage, legacy
+text-format: minimessage

@@ -1,0 +1,6 @@
+# This file contains player-facing JBlockGlitch messages.
+# Additional message sections can be added here as the plugin grows.
+
+help-message:
+  - "<dark_gray>[<aqua>JBlockGlitch<dark_gray>] <gray>Prevents block-placement glitches in protected regions."
+  - "<dark_gray>[<aqua>JBlockGlitch<dark_gray>] <gray>Use <white>/jblockglitch:help<gray> or <white>/jbg<gray> for this help."
