@@ -1,3 +1,13 @@
 # Controls how messages.yml values are interpreted.
 # Supported values: minimessage, legacy
+# Default: minimessage
 text-format: minimessage
+
+# Controls how denied block placements are handled.
+# Strict will rubber band the player to ground on any restricted block placement.
+# Medium will only rubber band the player to their previous position.
+# Experiment with both to see which works best for your server.
+#
+# Supported values: medium, strict
+# Default: strict
+detection-mode: strict

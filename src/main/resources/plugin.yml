@@ -15,8 +15,15 @@ commands:
     aliases:
       - jbg
     permission: jblockglitch.help
+  reload:
+    description: Reload JBlockGlitch configuration and messages
+    usage: /jblockglitch:reload
+    permission: jblockglitch.reload
 
 permissions:
   jblockglitch.help:
     description: View JBlockGlitch documentation
     default: true
+  jblockglitch.reload:
+    description: Reload JBlockGlitch configuration and messages
+    default: op

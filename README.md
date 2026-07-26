@@ -39,10 +39,17 @@ JBlockGlitch installed.
 | --- | --- | --- |
 | `/jblockglitch:help` | `jblockglitch.help` | Shows basic plugin documentation. |
 | `/jbg` | `jblockglitch.help` | Short alias for `/jblockglitch:help`. |
+| `/jblockglitch:reload` | `jblockglitch.reload` | Reloads `config.yml` and `messages.yml`. |
 
 The help message is configured in `messages.yml` as a multiline list. Messages
 use MiniMessage formatting by default. Set `text-format: legacy` in
 `config.yml` to use legacy `&` color codes instead.
+
+Set `detection-mode` in `config.yml` to `medium` for the original movement
+backstop behavior. The default `strict` mode moves the player to the denied
+block's Y coordinate when their block X/Z matches and their Y is within one
+block of the denied block, including partial blocks such as snow layers and
+slabs.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for build instructions and contributor
 setup.
