@@ -76,10 +76,20 @@ final class BlockGlitchListener implements Listener {
     }
 
     private boolean isStandingOnDeniedBlock(Location playerLocation, Location blockLocation) {
-        return playerLocation.getBlockX() == blockLocation.getBlockX()
-                && playerLocation.getBlockZ() == blockLocation.getBlockZ()
-                && playerLocation.getY() >= blockLocation.getBlockY()
-                && playerLocation.getY() <= blockLocation.getBlockY() + 1.0;
+        // check if player is inside a 3x10x3 box, the bottom of it centered on the block.
+        int blockX = blockLocation.getBlockX();
+        int blockY = blockLocation.getBlockY();
+        int blockZ = blockLocation.getBlockZ();
+
+        double playerX = playerLocation.getX();
+        double playerY = playerLocation.getY();
+        double playerZ = playerLocation.getZ();
+
+        boolean withinX = playerX >= blockX - 1.0 && playerX <= blockX + 2.0;
+        boolean withinZ = playerZ >= blockZ - 1.0 && playerZ <= blockZ + 2.0;
+        boolean withinY = playerY >= blockY && playerY <= blockY + 10.0;
+
+        return withinX && withinZ && withinY;
     }
 
     private void rubberbandToBlockY(Player player, Location blockLocation) {
