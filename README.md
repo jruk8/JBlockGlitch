@@ -45,11 +45,7 @@ The help message is configured in `messages.yml` as a multiline list. Messages
 use MiniMessage formatting by default. Set `text-format: legacy` in
 `config.yml` to use legacy `&` color codes instead.
 
-Set `detection-mode` in `config.yml` to `medium` for the original movement
-backstop behavior. The default `strict` mode moves the player to the denied
-block's Y coordinate when their block X/Z matches and their Y is within one
-block of the denied block, including partial blocks such as snow layers and
-slabs.
+`Config.yml` provides options for changing detection mode between `strict` and `medium`. Default is strict. If experiencing issues with strict, you should try changing to medium.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for build instructions and contributor
 setup.
