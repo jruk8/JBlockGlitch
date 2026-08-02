@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -24,6 +24,9 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v6
 
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
       - name: Build
         run: ./gradlew build
 
@@ -32,22 +35,22 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-
+          
           current_tag="${GITHUB_REF_NAME}"
-          previous_tag="$(git tag --sort=-version:refname --list 'v*' | grep -Fxv "$current_tag" | head -n 1 || true)"
-
+          previous_tag="$(git tag --sort=-version:refname --list 'v*' | grep -Fxv "$current_tag" | grep -v -i 'SNAPSHOT' | head -n 1 || true)"
+          
           if [ -n "$previous_tag" ]; then
-            range="${previous_tag}..HEAD"
+          range="${previous_tag}..HEAD"
           else
-            range="HEAD"
+          range="HEAD"
           fi
-
+          
           notes="$(git log --no-merges --pretty=format:'- %s' "$range")"
-
+          
           if [ -z "$notes" ]; then
-            notes="- No commit messages available."
+          notes="- No commit messages available."
           fi
-
+          
           delimiter="$(openssl rand -hex 8)"
           {
             echo "notes<<${delimiter}"
@@ -56,7 +59,7 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
       - name: Publish to Modrinth
-        if: ${{ vars.MODRINTH_ID != '' }}
+        if: ${{ vars.MODRINTH_ID != '' && !contains(github.ref_name, 'SNAPSHOT') }}
         uses: Kir-Antipov/mc-publish@v3
         with:
           fail-mode: warn
@@ -64,14 +67,15 @@ jobs:
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
           files: |
             build/libs/!(*-plain|*-sources|*-dev).jar
-          loaders: paper
+          loaders: ${{ vars.MODRINTH_LOADERS }}
           game-versions: ${{ vars.MODRINTH_GAME_VERSIONS }}
           version: ${{ github.ref_name }}
           name: ${{ github.event.repository.name }} ${{ github.ref_name }}
           changelog: ${{ steps.changelog.outputs.notes }}
 
       - name: Publish GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: build/libs/*.jar
+          token: ${{ secrets.GH_RELEASE_TOKEN }}
           body: ${{ steps.changelog.outputs.notes }}
