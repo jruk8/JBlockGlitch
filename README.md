@@ -34,6 +34,8 @@ from being created.
 
 ## Demos
 
+Plugin configured to `medium` detection mode. Tests done with autoclicker at 100 CPS.
+
 ### Demonstration without the fix
 
 This 10-second demonstration shows the block-placement glitch before
