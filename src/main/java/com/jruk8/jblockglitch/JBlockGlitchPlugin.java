@@ -1,47 +1,45 @@
 package com.jruk8.jblockglitch;
 
-import java.util.Objects;
+import com.jruk8.jblockglitch.commands.CommandBootstrap;
+import com.jruk8.jblockglitch.listeners.ListenerBootstrap;
+import com.jruk8.jblockglitch.listeners.ModeService;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class JBlockGlitchPlugin extends JavaPlugin {
 
-    private MessageManager messageManager;
-    private DetectionMode detectionMode;
+    private MessageService messageService;
+    private ModeService modeService;
+    private ListenerBootstrap listenerBootstrap;
 
     @Override
     public void onEnable() {
         saveDefaultConfig();
         saveResource("messages.yml", false);
-        loadDetectionMode();
 
-        messageManager = new MessageManager(this);
-        messageManager.load();
+        messageService = new MessageService(this);
+        messageService.load();
 
-        HelpCommand helpCommand = new HelpCommand(messageManager);
-        Objects.requireNonNull(getCommand("help")).setExecutor(helpCommand);
-        Objects.requireNonNull(getCommand("help")).setTabCompleter(helpCommand);
+        modeService = new ModeService(this);
 
-        ReloadCommand reloadCommand = new ReloadCommand(this);
-        Objects.requireNonNull(getCommand("reload")).setExecutor(reloadCommand);
+        var commandBootstrap = new CommandBootstrap(this, messageService);
+        commandBootstrap.register();
 
-        getServer().getPluginManager().registerEvents(new BlockGlitchListener(this), this);
+        listenerBootstrap = new ListenerBootstrap(this, modeService);
+        listenerBootstrap.register();
     }
 
-    void reloadPluginConfiguration() {
-        reloadConfig();
-        loadDetectionMode();
-        messageManager.load();
-    }
-
-    DetectionMode getDetectionMode() {
-        return detectionMode;
-    }
-
-    private void loadDetectionMode() {
-        String configuredMode = getConfig().getString("detection-mode", "strict");
-        detectionMode = DetectionMode.parse(configuredMode);
-        if (configuredMode == null || !configuredMode.equalsIgnoreCase(detectionMode.name())) {
-            getLogger().warning("Unknown detection-mode '" + configuredMode + "'; using strict.");
+    @Override
+    public void onDisable() {
+        if (listenerBootstrap != null) {
+            listenerBootstrap.shutdown();
+            listenerBootstrap = null;
         }
+    }
+
+    public void reload() {
+        reloadConfig();
+        messageService.load();
+        modeService.reload();
+        listenerBootstrap.reload();
     }
 }

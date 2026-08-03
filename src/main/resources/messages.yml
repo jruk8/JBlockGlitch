@@ -3,4 +3,8 @@
 
 help-message:
   - "<dark_gray>[<aqua>JBlockGlitch<dark_gray>] <gray>Prevents block-placement glitches in protected regions."
-  - "<dark_gray>[<aqua>JBlockGlitch<dark_gray>] <gray>Use <white>/jblockglitch:help<gray> or <white>/jbg<gray> for this help."
+  - "<dark_gray>[<aqua>JBlockGlitch<dark_gray>] <gray>Use <white>/jblockglitch help<gray> or <white>/jbg<gray> for this help."
+  - "<dark_gray>[<aqua>JBlockGlitch<dark_gray>] <gray>Use <white>/jblockglitch reload<gray> to reload configuration and messages."
+
+no-permission: "<dark_gray>[<aqua>JBlockGlitch<dark_gray>] <red>You do not have permission to use this command."
+reload-success: "<dark_gray>[<aqua>JBlockGlitch<dark_gray>] <green>Configuration and messages reloaded."

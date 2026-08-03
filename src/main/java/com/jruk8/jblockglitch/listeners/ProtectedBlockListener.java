@@ -1,8 +1,9 @@
-package com.jruk8.jblockglitch;
+package com.jruk8.jblockglitch.listeners;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,14 +13,18 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-final class BlockGlitchListener implements Listener {
+/**
+ * Listens for block placement events that are denied by the server and prevents
+ * players from glitching with the block by moving them back to the ground.
+ */
+public final class ProtectedBlockListener implements Listener {
 
     private static final long MOVEMENT_BACKSTOP_MILLIS = 250L;
-    private final JBlockGlitchPlugin plugin;
+    private final ModeService modeService;
     private final Map<UUID, DeniedPlacement> deniedPlacements = new HashMap<>();
 
-    BlockGlitchListener(JBlockGlitchPlugin plugin) {
-        this.plugin = plugin;
+    public ProtectedBlockListener(ModeService modeService) {
+        this.modeService = modeService;
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
@@ -34,7 +39,7 @@ final class BlockGlitchListener implements Listener {
                 event.getBlockPlaced().getLocation().clone(), System.currentTimeMillis());
         deniedPlacements.put(player.getUniqueId(), deniedPlacement);
 
-        if (plugin.getDetectionMode() == DetectionMode.STRICT) {
+        if (modeService.protectedBlockMode() == ModeService.ProtectedBlockMode.STRICT) {
             if (isStandingOnDeniedBlock(player.getLocation(), deniedPlacement.blockLocation())) {
                 rubberbandToBlockY(player, deniedPlacement.blockLocation());
                 deniedPlacements.remove(player.getUniqueId());
@@ -56,7 +61,7 @@ final class BlockGlitchListener implements Listener {
             return;
         }
 
-        if (plugin.getDetectionMode() == DetectionMode.STRICT) {
+        if (modeService.protectedBlockMode() == ModeService.ProtectedBlockMode.STRICT) {
             if (isStandingOnDeniedBlock(event.getTo(), deniedPlacement.blockLocation())) {
                 event.setTo(rubberbandLocation(event.getTo(), deniedPlacement.blockLocation()));
                 deniedPlacements.remove(playerId);

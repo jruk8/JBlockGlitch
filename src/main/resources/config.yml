@@ -3,11 +3,32 @@
 # Default: minimessage
 text-format: minimessage
 
-# Controls how denied block placements are handled.
-# Strict will rubber band the player to ground on any restricted block placement.
-# Medium will only rubber band the player to their previous position.
+# Controls how denied protected block placements are handled.
+# This matters for protection plugins like WorldGuard, GriefPrevention, and others.
+#
+# 'medium' will only rubber band the player to their previous position.
 # Experiment with both to see which works best for your server.
+#
+# 'strict' will rubber band the player to ground on any restricted block placement.
 #
 # Supported values: medium, strict
 # Default: strict
-detection-mode: strict
+protected-block-mode: strict
+
+# Controls whether the plugin will attempt to fix ghost items that may be
+# generated through methods like F+Q or other inventory manipulation mods.
+# This is useful for preventing ghost block placements using vanilla methods.
+#
+# 'medium' will only listen for when well-known event patterns (e.g., F+Q
+# or hotbarscroll+drop) are happening in the same tick. This is the
+# recommended option.
+#
+# 'hard' will listen for all inventory manipulation events. This prevents
+# MC-277905, a creative-mode ghost item bug.
+#
+# 'brute-force' forces the client to resync the inventory on every tick.
+# This is more aggressive and is likely to cause lag.
+#
+# Supported values: medium, hard, brute-force
+# Default: medium
+ghost-item-mode: medium

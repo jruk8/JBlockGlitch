@@ -5,15 +5,17 @@ api-version: "${apiVersion}"
 author: ${author}
 description: ${description}
 website: ${website}
-depend:
-  - WorldGuard
 
 commands:
+  jblockglitch:
+    description: JBlockGlitch main command
+    usage: /jblockglitch <help|reload>
+    aliases:
+      - jbg
+    permission: jblockglitch.help
   help:
     description: Show JBlockGlitch documentation
     usage: /jblockglitch:help
-    aliases:
-      - jbg
     permission: jblockglitch.help
   reload:
     description: Reload JBlockGlitch configuration and messages
