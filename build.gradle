@@ -2,10 +2,19 @@ plugins {
     id 'java'
     id 'checkstyle'
     id("com.gradleup.shadow") version "9.3.1"
+    id("pl.allegro.tech.build.axion-release") version "1.21.2"
 }
 
 group = project.property('pluginGroup')
-version = project.property('pluginVersion')
+
+scmVersion {
+    tag {
+        prefix = 'v'
+        versionSeparator = ''
+    }
+}
+
+version = scmVersion.version
 
 java {
     toolchain {
@@ -49,6 +58,12 @@ tasks.shadowJar {
     }
 
     relocate("org.bstats", project.group.toString())
+
+    archiveClassifier = ''
+}
+
+jar {
+    enabled = false
 }
 
 test {
@@ -61,13 +76,13 @@ check {
 
 processResources {
     def pluginProperties = [
-        version: project.version,
-        name: pluginName,
-        main: pluginMain,
-        apiVersion: paperApiVersion.split('\\.build\\.')[0],
-        author: pluginAuthor,
-        description: pluginDescription,
-        website: pluginWebsite
+            version: project.version,
+            name: pluginName,
+            main: pluginMain,
+            apiVersion: paperApiVersion.split('\\.build\\.')[0],
+            author: pluginAuthor,
+            description: pluginDescription,
+            website: pluginWebsite
     ]
     inputs.properties(pluginProperties)
     filesMatching('plugin.yml') {
