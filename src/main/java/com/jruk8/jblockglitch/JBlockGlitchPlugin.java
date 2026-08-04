@@ -3,6 +3,7 @@ package com.jruk8.jblockglitch;
 import com.jruk8.jblockglitch.commands.CommandBootstrap;
 import com.jruk8.jblockglitch.listeners.ListenerBootstrap;
 import com.jruk8.jblockglitch.listeners.ModeService;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class JBlockGlitchPlugin extends JavaPlugin {
@@ -26,6 +27,9 @@ public final class JBlockGlitchPlugin extends JavaPlugin {
 
         listenerBootstrap = new ListenerBootstrap(this, modeService);
         listenerBootstrap.register();
+
+        var metricsBootstrap = new MetricsBootstrap(this);
+        metricsBootstrap.register();
     }
 
     @Override

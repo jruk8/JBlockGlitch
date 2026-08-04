@@ -11,20 +11,21 @@ Contribute: https://github.com/jruk8/JBlockGlitch
 
 # Purpose
 
-The plugin contains two modes: **protect-based block **, and **vanilla ghost
-item** glitch prevention. Pairing these two modes together, JBlockGlitch
-practically prevents any sort of block glitching from happening. This
-makes it the most effective block glitch prevention plugin for modern
+The plugin contains two modes: protected area block glitching, and vanilla 
+ghost item prevention. Pairing these two modes together, JBlockGlitch 
+practically prevents any sort of block glitching from happening. This 
+makes it the most effective solution for block glitch prevention in modern
 Paper servers.
 
 ## Protect-based block glitch prevention
-When any plugin, be it WorldGuard or GriefProtector, the plugin immediately
-resends the real block state to the player and briefly prevents the upward
-movement that can otherwise be triggered by the client-side ghost block.
+When any plugin rejects a block placement, be it WorldGuard or GriefProtector, 
+the plugin immediately resends the real block state to the player and briefly 
+prevents the upward movement that can otherwise be triggered by the 
+client-side ghost block.
 
- Vanilla ghost item glitch prevention
-When a player attempts a vanilla ghost item creation (e.g., F+Q in the
-same tick), the plugin will prevent any ghost item, intentional or otherwise,
+## Vanilla ghost item glitch prevention
+When a player attempts a vanilla ghost item creation (e.g., F+Q in the same 
+tick), the plugin will prevent any ghost item, intentional or otherwise, 
 from being created.
 
 # Requirements
