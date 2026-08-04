@@ -2,10 +2,34 @@ plugins {
     id 'java'
     id 'checkstyle'
     id("com.gradleup.shadow") version "9.3.1"
+    id("pl.allegro.tech.build.axion-release") version "1.21.2"
 }
 
 group = project.property('pluginGroup')
-version = project.property('pluginVersion')
+
+scmVersion {
+    tag {
+        prefix = 'v'
+        versionSeparator = ''
+    }
+    snapshotCreator { version, position ->
+        // Swap 'GITHUB_RUN_NUMBER' for 'CI_PIPELINE_IID' (GitLab) or 'BUILD_NUMBER' (Jenkins)
+        def ciBuild = System.getenv('GITHUB_RUN_NUMBER')
+
+        // If it's null (e.g., you are building locally), fall back to nothing
+        def suffix = ciBuild ?: ""
+
+        // Return the exact string that replaces the default '-SNAPSHOT'.
+        // Only append the period when a build number is present.
+        // Use string concatenation (not GString interpolation) so the
+        // return value is a java.lang.String, which axion-release requires.
+        return suffix ? ("-SNAPSHOT." + suffix) : "-SNAPSHOT"
+    }
+}
+
+// Critical: Set this *after* the scmVersion block.
+// If you evaluate project.version before configuring the closure, Gradle will ignore your logic and you will be miserable.
+project.version = scmVersion.version
 
 java {
     toolchain {
@@ -49,6 +73,12 @@ tasks.shadowJar {
     }
 
     relocate("org.bstats", project.group.toString())
+
+    archiveClassifier = ''
+}
+
+jar {
+    enabled = false
 }
 
 test {
@@ -61,13 +91,13 @@ check {
 
 processResources {
     def pluginProperties = [
-        version: project.version,
-        name: pluginName,
-        main: pluginMain,
-        apiVersion: paperApiVersion.split('\\.build\\.')[0],
-        author: pluginAuthor,
-        description: pluginDescription,
-        website: pluginWebsite
+            version: project.version,
+            name: pluginName,
+            main: pluginMain,
+            apiVersion: paperApiVersion.split('\\.build\\.')[0],
+            author: pluginAuthor,
+            description: pluginDescription,
+            website: pluginWebsite
     ]
     inputs.properties(pluginProperties)
     filesMatching('plugin.yml') {
