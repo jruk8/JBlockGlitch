@@ -128,6 +128,56 @@ jobs:
           prerelease: false
           draft: false
 
+      # ---------- Snapshot cleanup on release ----------
+      # If the latest release has no commits after it, the snapshot build is identical
+      # to the release, so the snapshot pre-release is redundant and can be deleted.
+      - name: Check if there are commits after the release tag
+        id: release-tip-check
+        if: ${{ steps.tag-check.outputs.has_v_tag == 'true' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # Make sure the main tip is up to date for comparison
+          git fetch origin main --quiet
+
+          tagged_commit="$(git rev-parse HEAD)"
+          latest_main="$(git rev-parse origin/main)"
+
+          if [ "$tagged_commit" = "$latest_main" ]; then
+            echo "no_commits_after=true" >> "$GITHUB_OUTPUT"
+            echo "Release tag is the latest commit on main; snapshot is identical to the release."
+          else
+            echo "no_commits_after=false" >> "$GITHUB_OUTPUT"
+            echo "There are commits after the release tag; keeping the snapshot."
+          fi
+
+      - name: Delete snapshot release (no commits after latest release)
+        if: ${{ steps.tag-check.outputs.has_v_tag == 'true' && steps.release-tip-check.outputs.no_commits_after == 'true' }}
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GH_RELEASE_TOKEN }}
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            const releases = await github.paginate(
+              github.rest.repos.listReleases,
+              { owner, repo }
+            );
+
+            const snapshotRelease = releases.find(r => r.tag_name === "latest-snapshot");
+            if (snapshotRelease) {
+              await github.rest.repos.deleteRelease({
+                owner,
+                repo,
+                release_id: snapshotRelease.id
+              });
+              console.log("Deleted snapshot release:", snapshotRelease.id);
+            } else {
+              console.log("No snapshot release found; nothing to delete.");
+            }
+
       - name: Delete previous snapshot release
         if: ${{ github.ref == 'refs/heads/main' && steps.tag-check.outputs.has_v_tag == 'false' }}
         uses: actions/github-script@v7
