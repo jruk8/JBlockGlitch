@@ -11,5 +11,5 @@ concurrency:
 
 jobs:
   publish:
-    uses: jruk8/plugin-conventions/.github/workflows/publish.yml@v1.0.0
+    uses: jruk8/plugin-conventions/.github/workflows/publish.yml@v1.0.1
     secrets: inherit
