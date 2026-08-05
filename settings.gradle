@@ -1,1 +1,14 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        maven {
+            url = 'https://maven.pkg.github.com/jruk8/plugin-conventions'
+            credentials {
+                username = System.getenv('GITHUB_ACTOR') ?: providers.gradleProperty('gpr.user').getOrElse('jruk8')
+                password = System.getenv('GITHUB_TOKEN') ?: providers.gradleProperty('gpr.key').getOrElse('')
+            }
+        }
+    }
+}
+
 rootProject.name = 'JBlockGlitch'

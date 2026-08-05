@@ -9,8 +9,8 @@ and runs checkstyle:
 ./gradlew build
 ```
 
-The CI pipeline runs the same command on JDK 25 (see
-`.github/workflows/build.yml`):
+The CI pipeline runs the same command on JDK 25 via the reusable workflow
+in `jruk8/plugin-conventions/.github/workflows/build.yml`:
 
 ```shell
 ./gradlew checkstyleMain
@@ -31,8 +31,8 @@ and shared logic in the root package.
 
 ## Conventions
 
-- Java 25 (see the toolchain in `build.gradle`)
-- Follow the checkstyle rules in `config/checkstyle/checkstyle.xml`: no star
+- Java 25 (configured by the `com.jruk8.plugin-conventions` convention plugin)
+- Follow the checkstyle rules bundled in the convention plugin: no star
   imports, no unused imports, braces required, max line length 120
 - Plugin metadata (name, version, main class, etc.) is defined in
   `gradle.properties` and expanded into `src/main/resources/plugin.yml` at
