@@ -3,32 +3,53 @@
 # Default: minimessage
 text-format: minimessage
 
-# Controls how denied protected block placements are handled.
+# Settings for configuring protected block placements validation.
 # This matters for protection plugins like WorldGuard, GriefPrevention, and others.
-#
-# 'medium' will only rubber band the player to their previous position.
-# Experiment with both to see which works best for your server.
-#
-# 'strict' will rubber band the player to ground on any restricted block placement.
-#
-# Supported values: medium, strict
-# Default: medium
-protected-block-mode: medium
+protected-block:
+  enabled: true
 
-# Controls whether the plugin will attempt to fix ghost items that may be
-# generated through methods like F+Q or other inventory manipulation mods.
-# This is useful for preventing ghost block placements using vanilla methods.
-#
-# 'medium' will only listen for when well-known event patterns (e.g., F+Q
-# or hotbarscroll+drop) are happening in the same tick. This is the
-# recommended option.
-#
-# 'hard' will listen for all inventory manipulation events. This prevents
-# MC-277905, a creative-mode ghost item bug.
-#
-# 'brute-force' forces the client to resync the inventory on every tick.
-# This is more aggressive and is likely to cause lag.
-#
-# Supported values: medium, hard, brute-force
-# Default: medium
-ghost-item-mode: medium
+  # Controls how denied protected block placements are handled.
+  #
+  # 'medium' will rubber band the player to their position on the last tick.
+  # This denies most protected block placements but may allow some to go through.
+  # (for example, 1.5 block or even higher jumps are possible, albeit hard)
+  #
+  # 'strict' will teleport the player to the ground using advanced detection.
+  #
+  # Supported values: medium, strict
+  # Default: strict
+  mode: strict
+
+# Settings for configuring ghost items and ghost blocks validation.
+ghost-item:
+  enabled: true
+
+  # Controls how the plugin will attempt to fix ghost items generation.
+  #
+  # 'medium' will only listen for when well-known event patterns (e.g., F+Q
+  # or hotbarscroll+drop) are happening in the same tick. This is the
+  # recommended option.
+  #
+  # 'hard' will listen for all inventory manipulation events. This prevents
+  # MC-277905, a creative-mode ghost item bug.
+  #
+  # 'brute-force' forces the client to resync the inventory on every tick.
+  # This is more aggressive and is likely to cause lag.
+  #
+  # Supported values: medium, hard, brute-force
+  # Default: medium
+  mode: medium
+
+  # Controls how often the plugin will force the client to resync the blocks
+  # around the player (a 3x3x3 cube centered on the block of the player's head).
+  #
+  # This prevents client side modifications that can bypass vanilla ghost
+  # item generation, or ghost blocks that protected block detection may
+  # sometimes miss.
+  #
+  # A value of -1 disables checking entirely. A value of 1 will likely prevent
+  # almost everything, but may cause lag. Choose a value suitable for your
+  # server's needs.
+  #
+  # Default: 5 ticks (4 times per second)
+  resync-tick-interval: 5

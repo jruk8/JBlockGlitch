@@ -9,24 +9,44 @@ Download: https://modrinth.com/plugin/jblockglitch
 
 Contribute: https://github.com/jruk8/JBlockGlitch
 
-# Purpose
+## Protected-block glitch prevention
 
-The plugin contains two modes: protected area block glitching, and vanilla 
-ghost item prevention. Pairing these two modes together, JBlockGlitch 
-practically prevents any sort of block glitching from happening. This 
-makes it the most effective solution for block glitch prevention in modern
-Paper servers.
+When a protection plugin rejects a block placement, such as WorldGuard or
+GriefPrevention, JBlockGlitch resends the real block state to the player and
+prevents movement through the client-side ghost block.
 
-## Protect-based block glitch prevention
-When any plugin rejects a block placement, be it WorldGuard or GriefProtector, 
-the plugin immediately resends the real block state to the player and briefly 
-prevents the upward movement that can otherwise be triggered by the 
-client-side ghost block.
+The plugin supports both normal block placements and bucket-based placements,
+including water, lava, and powder snow. Bucket protection uses multiple event
+paths to support protection plugins that handle bucket interactions differently.
 
-## Vanilla ghost item glitch prevention
-When a player attempts a vanilla ghost item creation (e.g., F+Q in the same 
-tick), the plugin will prevent any ghost item, intentional or otherwise, 
-from being created.
+Two detection modes are available:
+
+- `medium` rubberbands the player to their previous position when a denied
+  placement is detected.
+- `strict` uses additional movement and position detection to prevent the
+  player from standing inside or moving through a denied block.
+
+## Vanilla ghost item and ghost block prevention
+
+JBlockGlitch detects common vanilla ghost item creation techniques, such as
+inventory manipulation involving F+Q, hotbar switching, dropping items, and
+block placement.
+
+Three detection modes are available:
+
+- `medium` detects common ghost item manipulation patterns.
+- `hard` additionally monitors inventory manipulation events, including
+  creative-mode inventory interactions.
+- `brute-force` continuously resynchronizes player inventories.
+
+JBlockGlitch can also periodically resynchronize the blocks immediately
+surrounding each player. This helps correct client-side ghost blocks created
+through client modifications that never result in a server-side block
+placement event.
+
+The block resynchronization checks an 8-block area around the player,
+covering a 3×3×2 region containing the player's feet and head space. The
+interval is configurable and can be disabled independently.
 
 # Requirements
 
@@ -81,9 +101,11 @@ The help message is configured in `messages.yml` as a multiline list. Messages
 use MiniMessage formatting by default. Set `text-format: legacy` in
 `config.yml` to use legacy `&` color codes instead.
 
-`Config.yml` provides options for changing detection mode for each of the
-two detection engines. If issues occur, regenerate all files, download the
-latest version. If the issue persists, report to the issue tracker.
+`Config.yml` provides independent options for protected-block detection,
+ghost-item detection, and nearby ghost-block resynchronization.
+
+If issues occur, regenerate all configuration files and download the latest
+version. If the issue persists, report it to the issue tracker.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for build instructions and contributor
 setup.

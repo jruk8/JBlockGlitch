@@ -2,6 +2,9 @@ package com.jruk8.jblockglitch.listeners;
 
 import com.jruk8.jblockglitch.JBlockGlitchPlugin;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -23,25 +26,22 @@ import java.util.UUID;
  */
 public final class GhostItemListener implements Listener {
 
+    private static final int BLOCK_RESYNC_RADIUS = 1;
+
     private final JBlockGlitchPlugin plugin;
     private final ModeService modeService;
     private final Map<UUID, Integer> actionCounts = new HashMap<>();
     private final CoreEvents coreEvents = new CoreEvents();
     private final InventoryClickEvents inventoryClickEvents = new InventoryClickEvents();
     private BukkitTask tickTask;
+    private int blockResyncTicks;
 
     public GhostItemListener(JBlockGlitchPlugin plugin, ModeService modeService) {
         this.plugin = plugin;
         this.modeService = modeService;
 
-        if (!isBruteForce()) {
-            // Event-based counting only matters when we're not already
-            // resyncing everyone every tick.
-            Bukkit.getPluginManager().registerEvents(coreEvents, plugin);
-            if (modeService.ghostItemMode() == ModeService.GhostItemMode.HARD) {
-                Bukkit.getPluginManager().registerEvents(inventoryClickEvents, plugin);
-            }
-        }
+        Bukkit.getPluginManager().registerEvents(coreEvents, plugin);
+        Bukkit.getPluginManager().registerEvents(inventoryClickEvents, plugin);
 
         startTickLoop();
     }
@@ -56,21 +56,86 @@ public final class GhostItemListener implements Listener {
      */
     private void startTickLoop() {
         tickTask = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
+            if (!modeService.ghostItemEnabled()) {
+                actionCounts.clear();
+                blockResyncTicks = 0;
+                return;
+            }
+
             if (isBruteForce()) {
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     player.updateInventory();
                 }
-                return;
+            } else {
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    Integer count = actionCounts.get(player.getUniqueId());
+
+                    if (count != null && count > 0) {
+                        handlePotentialGhost(player);
+                    }
+                }
+
+                actionCounts.clear();
             }
 
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                Integer count = actionCounts.get(player.getUniqueId());
-                if (count != null && count > 0) {
-                    handlePotentialGhost(player);
+            handleBlockResync();
+        }, 1L, 1L);
+    }
+
+    private void handleBlockResync() {
+        int interval = modeService.ghostItemResyncTickInterval();
+
+        if (interval < 0) {
+            blockResyncTicks = 0;
+            return;
+        }
+
+        if (++blockResyncTicks < interval) {
+            return;
+        }
+
+        blockResyncTicks = 0;
+
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            revalidateNearbyBlocks(player);
+        }
+    }
+
+    /**
+     * Sends block change packets to the player for all blocks in a 3x3x2
+     * area around their current location. This is a brute-force way to
+     * ensure the client has the correct block state and can help prevent
+     * ghost item issues that arise from desyncs between client and server.
+     */
+    private void revalidateNearbyBlocks(Player player) {
+        Location location = player.getLocation();
+        World world = player.getWorld();
+
+        int centerX = location.getBlockX();
+        int centerY = location.getBlockY();
+        int centerZ = location.getBlockZ();
+
+        for (int x = centerX - BLOCK_RESYNC_RADIUS;
+             x <= centerX + BLOCK_RESYNC_RADIUS;
+             x++) {
+
+            for (int y = centerY;
+                 y <= centerY + 1;
+                 y++) {
+
+                for (int z = centerZ - BLOCK_RESYNC_RADIUS;
+                     z <= centerZ + BLOCK_RESYNC_RADIUS;
+                     z++) {
+
+                    Block block = world.getBlockAt(x, y, z);
+
+                    player.sendBlockChange(
+                            block.getLocation(),
+                            block.getBlockData()
+                    );
                 }
             }
-            actionCounts.clear();
-        }, 1L, 1L);
+        }
     }
 
     void shutdown() {
@@ -78,9 +143,12 @@ public final class GhostItemListener implements Listener {
             tickTask.cancel();
             tickTask = null;
         }
+
         HandlerList.unregisterAll(coreEvents);
         HandlerList.unregisterAll(inventoryClickEvents);
+
         actionCounts.clear();
+        blockResyncTicks = 0;
     }
 
     private boolean isBruteForce() {
@@ -93,9 +161,10 @@ public final class GhostItemListener implements Listener {
      * these counts each tick.
      */
     private void registerAction(Player player) {
-        if (isBruteForce()) {
+        if (!modeService.ghostItemEnabled() || isBruteForce()) {
             return;
         }
+
         actionCounts.merge(player.getUniqueId(), 1, Integer::sum);
     }
 
@@ -138,7 +207,10 @@ public final class GhostItemListener implements Listener {
 
         @EventHandler
         public void onInventoryClick(InventoryClickEvent event) {
-            if (event.getWhoClicked() instanceof Player player) {
+            if (event.getWhoClicked() instanceof Player player
+                    && modeService.ghostItemEnabled()
+                    && modeService.ghostItemMode() == ModeService.GhostItemMode.HARD) {
+
                 registerAction(player);
             }
         }
