@@ -44,7 +44,7 @@ surrounding each player. This helps correct client-side ghost blocks created
 through client modifications that never result in a server-side block
 placement event.
 
-The block resynchronization checks an 8-block area around the player,
+The block resynchronization checks an 18-block area around the player,
 covering a 3×3×2 region containing the player's feet and head space. The
 interval is configurable and can be disabled independently.
 
