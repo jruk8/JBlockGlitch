@@ -1,9 +1,7 @@
 pluginManagement {
     repositories {
         gradlePluginPortal()
-        maven {
-            url = 'https://maven.pkg.github.com/jruk8/plugin-conventions'
-        }
+        maven { url = 'https://jitpack.io' }
     }
 }
 

@@ -14,6 +14,6 @@ public class MetricsBootstrap implements Bootstrap {
 
     @Override
     public void register() {
-        Metrics metrics = new Metrics(plugin, PLUGIN_ID);
+        new Metrics(plugin, PLUGIN_ID);
     }
 }
