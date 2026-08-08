@@ -25,7 +25,7 @@ public final class ListenerBootstrap implements Bootstrap {
     public void register() {
         protectedBlockListener = new ProtectedBlockListener(modeService);
         Bukkit.getPluginManager().registerEvents(protectedBlockListener, plugin);
-        ghostItemListener = new GhostItemListener(plugin, modeService);
+        ghostItemListener = new GhostItemListener(plugin, modeService, new GhostResyncer());
     }
 
     /**

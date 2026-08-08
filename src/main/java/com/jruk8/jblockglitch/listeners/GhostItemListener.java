@@ -2,9 +2,6 @@ package com.jruk8.jblockglitch.listeners;
 
 import com.jruk8.jblockglitch.JBlockGlitchPlugin;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -26,19 +23,19 @@ import java.util.UUID;
  */
 public final class GhostItemListener implements Listener {
 
-    private static final int BLOCK_RESYNC_RADIUS = 1;
-
     private final JBlockGlitchPlugin plugin;
     private final ModeService modeService;
+    private final GhostResyncer ghostResyncer;
     private final Map<UUID, Integer> actionCounts = new HashMap<>();
     private final CoreEvents coreEvents = new CoreEvents();
     private final InventoryClickEvents inventoryClickEvents = new InventoryClickEvents();
     private BukkitTask tickTask;
     private int blockResyncTicks;
 
-    public GhostItemListener(JBlockGlitchPlugin plugin, ModeService modeService) {
+    public GhostItemListener(JBlockGlitchPlugin plugin, ModeService modeService, GhostResyncer ghostResyncer) {
         this.plugin = plugin;
         this.modeService = modeService;
+        this.ghostResyncer = ghostResyncer;
 
         Bukkit.getPluginManager().registerEvents(coreEvents, plugin);
         Bukkit.getPluginManager().registerEvents(inventoryClickEvents, plugin);
@@ -97,44 +94,7 @@ public final class GhostItemListener implements Listener {
         blockResyncTicks = 0;
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            revalidateNearbyBlocks(player);
-        }
-    }
-
-    /**
-     * Sends block change packets to the player for all blocks in a 3x3x2
-     * area around their current location. This is a brute-force way to
-     * ensure the client has the correct block state and can help prevent
-     * ghost item issues that arise from desyncs between client and server.
-     */
-    private void revalidateNearbyBlocks(Player player) {
-        Location location = player.getLocation();
-        World world = player.getWorld();
-
-        int centerX = location.getBlockX();
-        int centerY = location.getBlockY();
-        int centerZ = location.getBlockZ();
-
-        for (int x = centerX - BLOCK_RESYNC_RADIUS;
-             x <= centerX + BLOCK_RESYNC_RADIUS;
-             x++) {
-
-            for (int y = centerY;
-                 y <= centerY + 1;
-                 y++) {
-
-                for (int z = centerZ - BLOCK_RESYNC_RADIUS;
-                     z <= centerZ + BLOCK_RESYNC_RADIUS;
-                     z++) {
-
-                    Block block = world.getBlockAt(x, y, z);
-
-                    player.sendBlockChange(
-                            block.getLocation(),
-                            block.getBlockData()
-                    );
-                }
-            }
+            ghostResyncer.revalidateNearbyBlocks(player);
         }
     }
 

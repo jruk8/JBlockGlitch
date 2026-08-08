@@ -9,6 +9,20 @@ Download: https://modrinth.com/plugin/jblockglitch
 
 Contribute: https://github.com/jruk8/JBlockGlitch
 
+# Requirements
+
+- Paper 26.x (tested on 26.2+)
+- Java 25
+
+## Purpose
+The plugin contains two independent detection systems: protected-block
+glitch prevention and vanilla ghost item prevention. Pairing these two
+systems helps prevent common block glitching techniques on modern Paper
+servers.
+
+Both systems can be independently enabled or disabled and configured
+according to the server's performance and detection requirements.
+
 ## Protected-block glitch prevention
 
 When a protection plugin rejects a block placement, such as WorldGuard or
@@ -47,11 +61,6 @@ placement event.
 The block resynchronization checks an 18-block area around the player,
 covering a 3×3×2 region containing the player's feet and head space. The
 interval is configurable and can be disabled independently.
-
-# Requirements
-
-- Paper 26.x (tested on 26.2+)
-- Java 25
 
 # Demos
 
