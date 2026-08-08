@@ -237,9 +237,26 @@ public final class ProtectedBlockListener implements Listener {
             Location blockLocation
     ) {
         Location rubberband = playerLocation.clone();
-        rubberband.setX(rubberband.getBlockX() + 0.5);
+
+        // Block at player's x/z, but at the block's y level
+        Block checkBlock = playerLocation.getWorld().getBlockAt(
+                playerLocation.getBlockX(),
+                blockLocation.getBlockY(),
+                playerLocation.getBlockZ()
+        );
+
+        boolean hasCollision = !checkBlock.getCollisionShape().getBoundingBoxes().isEmpty();
+
+        if (hasCollision) {
+            // Keep player's original x/z, don't center on the block
+            rubberband.setX(playerLocation.getX());
+            rubberband.setZ(playerLocation.getZ());
+        } else {
+            rubberband.setX(rubberband.getBlockX() + 0.5);
+            rubberband.setZ(rubberband.getBlockZ() + 0.5);
+        }
+
         rubberband.setY(blockLocation.getBlockY());
-        rubberband.setZ(rubberband.getBlockZ() + 0.5);
         return rubberband;
     }
 
