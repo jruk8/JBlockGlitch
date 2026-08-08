@@ -41,7 +41,7 @@ ghost-item:
   mode: medium
 
   # Controls how often the plugin will force the client to resync the blocks
-  # around the player (a 3x3x3 cube centered on the block of the player's head).
+  # around the player (a 2x2x4 cube centered on the player).
   #
   # This prevents client side modifications that can bypass vanilla ghost
   # item generation, or ghost blocks that protected block detection may
