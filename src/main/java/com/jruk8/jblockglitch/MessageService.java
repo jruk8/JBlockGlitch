@@ -21,19 +21,21 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public final class MessageService {
 
-    private static final String DEFAULT_PREFIX = "<dark_gray>[<aqua>JBlockGlitch<dark_gray>] ";
-    private static final String DEFAULT_CONFIG_HEADER = "{prefix}<gray>Current configuration:";
-    private static final String DEFAULT_CONFIG_ENTRY = "{prefix}<gray>{key}<dark_gray>: <white>{value}";
+    private static final String DEFAULT_PREFIX = "<dark_gray>[<{brand-col}>JBlockGlitch<dark_gray>] ";
+    private static final String DEFAULT_BRAND_COLOR = "#5adbc8";
+    private static final String DEFAULT_CONFIG_HEADER = "{prefix}<{brand-col}>Current configuration:";
+    private static final String DEFAULT_CONFIG_ENTRY = "\n{prefix}<gray>» {key}<dark_gray>: <white>{value}";
     private static final String DEFAULT_CONFIG_UPDATED =
             "{prefix}<green>Set <white>{key}<green> to <white>{value}<green>.";
     private static final String DEFAULT_CONFIG_UNKNOWN_KEY =
             "{prefix}<red>Unknown config key '<white>{key}<red>'. Valid keys: <white>{keys}<red>.";
     private static final String DEFAULT_CONFIG_INVALID_VALUE =
             "{prefix}<red>Invalid value '<white>{value}<red>' for <white>{key}<red>. Allowed: <white>{allowed}<red>.";
-    private static final String DEFAULT_CONFIG_USAGE = "{prefix}<gray>Usage: <white>/jbg config [key] [value]";
+    private static final String DEFAULT_CONFIG_USAGE = "{prefix}<gray>» <white>/jbg config [key] [value]";
 
     private final JavaPlugin plugin;
     private String prefix = DEFAULT_PREFIX;
+    private String brandColor = DEFAULT_BRAND_COLOR;
     private List<String> helpLines = List.of();
     private String noPermissionMessage = "";
     private String reloadSuccessMessage = "";
@@ -120,6 +122,7 @@ public final class MessageService {
         File messagesFile = new File(plugin.getDataFolder(), "messages.yml");
         FileConfiguration messages = YamlConfiguration.loadConfiguration(messagesFile);
         prefix = messages.getString("prefix", DEFAULT_PREFIX);
+        brandColor = messages.getString("brand-color", DEFAULT_BRAND_COLOR);
         helpLines = messages.getStringList("help-message");
         noPermissionMessage = messages.getString("no-permission", "");
         reloadSuccessMessage = messages.getString("reload-success", "");
@@ -144,7 +147,8 @@ public final class MessageService {
     }
 
     private Component deserialize(String message) {
-        String rendered = message.replace("{prefix}", prefix);
+        // Prefix first: the prefix itself may carry {brand-col}.
+        String rendered = message.replace("{prefix}", prefix).replace("{brand-col}", brandColor);
         if (textFormat == TextFormat.LEGACY) {
             return LegacyComponentSerializer.legacyAmpersand().deserialize(rendered);
         }

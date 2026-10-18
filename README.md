@@ -40,6 +40,10 @@ Two detection modes are available:
 - `strict` uses additional movement and position detection to prevent the
   player from standing inside or moving through a denied block.
 
+Denials are caught whether the protection plugin cancels the block place
+event or the interaction itself, so WorldGuard, GriefPrevention, and
+JManhunt-style lobby protection all work.
+
 ## Vanilla ghost item and ghost block prevention
 
 JBlockGlitch detects common vanilla ghost item creation techniques, such as
@@ -114,6 +118,11 @@ use MiniMessage formatting by default. Set `text-format: legacy` in
 
 Every message supports the `{prefix}` placeholder, backed by the `prefix`
 key in `messages.yml`, so the plugin tag can be changed in one place.
+Headers and the default prefix use the `{brand-col}` placeholder, backed
+by `brand-color` (default `#5adbc8`).
+
+Info and success messages play the `sounds.neutral` sound, errors and
+command usage play `sounds.angry`. Both are configurable in `config.yml`.
 
 `config.yml` provides independent options for protected-block detection,
 ghost-item detection, and nearby ghost-block resynchronization.

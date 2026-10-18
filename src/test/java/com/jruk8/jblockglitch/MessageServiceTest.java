@@ -3,6 +3,7 @@ package com.jruk8.jblockglitch;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -110,6 +111,50 @@ class MessageServiceTest {
         ArgumentCaptor<Sound> captor = ArgumentCaptor.forClass(Sound.class);
         org.mockito.Mockito.verify(player).playSound(captor.capture());
         return captor.getValue();
+    }
+
+    @Test
+    void brandColorResolvesInsidePrefixAndMessages() throws Exception {
+        MessageService service = serviceWithMessages("""
+                prefix: "[<{brand-col}>T] "
+                brand-color: "#5adbc8"
+                no-permission: "{prefix}Nope"
+                """, "minimessage");
+
+        CommandSender sender = mock(CommandSender.class);
+        service.sendNoPermission(sender);
+
+        ArgumentCaptor<Component> captor = ArgumentCaptor.forClass(Component.class);
+        org.mockito.Mockito.verify(sender).sendMessage(captor.capture());
+        String serialized = MiniMessage.miniMessage().serialize(captor.getValue()).toLowerCase();
+
+        assertTrue(serialized.contains("#5adbc8"), serialized);
+        assertTrue(!serialized.contains("{brand-col}"), serialized);
+    }
+
+    @Test
+    void missingBrandColorFallsBackToDefault() throws Exception {
+        MessageService service = serviceWithMessages("""
+                no-permission: "<{brand-col}>Nope"
+                """, "minimessage");
+
+        CommandSender sender = mock(CommandSender.class);
+        service.sendNoPermission(sender);
+
+        ArgumentCaptor<Component> captor = ArgumentCaptor.forClass(Component.class);
+        org.mockito.Mockito.verify(sender).sendMessage(captor.capture());
+        String serialized = MiniMessage.miniMessage().serialize(captor.getValue()).toLowerCase();
+
+        assertTrue(serialized.contains("#5adbc8"), serialized);
+    }
+
+    @Test
+    void configDefaultsRenderBulletsAndSpacing() throws Exception {
+        MessageService service = serviceWithMessages("no-permission: \"Nope\"\n", "minimessage");
+
+        assertEquals("\n[JBlockGlitch] » key: value",
+                sentPlainText(service, sender -> service.sendConfigValue(sender, "key", "value")));
+        assertTrue(sentPlainText(service, service::sendConfigUsage).contains("» /jbg config [key] [value]"));
     }
 
     @Test
