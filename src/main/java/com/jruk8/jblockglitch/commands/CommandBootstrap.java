@@ -22,19 +22,8 @@ public final class CommandBootstrap implements Bootstrap {
     @Override
     public void register() {
         HelpCommand helpCommand = new HelpCommand(messageService);
-        var pluginHelpCommand = plugin.getCommand("help");
-        Objects.requireNonNull(pluginHelpCommand).setExecutor(helpCommand);
-        Objects.requireNonNull(pluginHelpCommand).setTabCompleter(helpCommand);
-
         ReloadCommand reloadCommand = new ReloadCommand(plugin, messageService);
-        var pluginReloadCommand = plugin.getCommand("reload");
-        Objects.requireNonNull(pluginReloadCommand).setExecutor(reloadCommand);
-        Objects.requireNonNull(pluginReloadCommand).setTabCompleter(reloadCommand);
-
         ConfigCommand configCommand = new ConfigCommand(plugin, messageService);
-        var pluginConfigCommand = plugin.getCommand("config");
-        Objects.requireNonNull(pluginConfigCommand).setExecutor(configCommand);
-        Objects.requireNonNull(pluginConfigCommand).setTabCompleter(configCommand);
 
         JBlockGlitchCommand jBlockGlitchCommand = new JBlockGlitchCommand(helpCommand, reloadCommand, configCommand);
         var pluginJBlockGlitchCommand = plugin.getCommand("jblockglitch");
