@@ -11,21 +11,21 @@ brand-color: "#5adbc8"
 
 help-message:
   - "\n{prefix}<{brand-col}>JBlockGlitch commands:"
-  - "\n{prefix}<gray>» <white>/jbg help <gray>- this help"
-  - "\n{prefix}<gray>» <white>/jbg reload <gray>- reload config and messages"
-  - "\n{prefix}<gray>» <white>/jbg config <gray>- view settings"
-  - "\n{prefix}<gray>» <white>/jbg config <key> [value] <gray>- change a setting"
+  - "<gray>» <white>/jbg help <gray>- this help"
+  - "<gray>» <white>/jbg reload <gray>- reload config and messages"
+  - "<gray>» <white>/jbg config <gray>- view settings"
+  - "<gray>» <white>/jbg config <key> [value] <gray>- change a setting"
 
 no-permission: "{prefix}<red>You do not have permission to use this command."
 reload-success: "{prefix}<green>Configuration and messages reloaded."
 
 # Placeholders: {key}, {value}, {keys}, {allowed}.
-config-header: "{prefix}<{brand-col}>Current configuration:"
-config-entry: "\n{prefix}<gray>» {key}<dark_gray>: <white>{value}"
+config-header: "\n{prefix}\n<{brand-col}>Current configuration:"
+config-entry: "<gray>» {key}<dark_gray>: <white>{value}"
 config-updated: "{prefix}<green>Set <white>{key}<green> to <white>{value}<green>."
 config-unknown-key: "{prefix}<red>Unknown config key '<white>{key}<red>'. Valid keys: <white>{keys}<red>."
 config-invalid-value: "{prefix}<red>Invalid value '<white>{value}<red>' for <white>{key}<red>. Allowed: <white>{allowed}<red>."
 config-usage: "{prefix}<gray>» <white>/jbg config [key] [value]"
 
 # Placeholders: {new-version}, {curr}, {url}.
-update-available: "\n{prefix}{brand-color}An update for <white>JBlockGlitch {new-version}</white> is available <white>(curr {curr})</white>.\n<white>[<click:open_url:'https://modrinth.com/plugin/jblockglitch'><#1BD96A>Modrinth</#1BD96A></click>] --**-- [<click:open_url:'{url}'><#4a9bd9>GitHub</#4a9bd9></click>]</white>"
+update-available: "\n{prefix}\n{brand-color}An update for <white>JBlockGlitch</white> is available <white>(v{curr} => v{new-version})</white>.\n<white>[<click:open_url:'https://modrinth.com/plugin/jblockglitch'><#1BD96A>Modrinth</#1BD96A></click>] {brand-color}--**-- <white>[<click:open_url:'{url}'><#4a9bd9>GitHub</#4a9bd9></click>]</white>"
