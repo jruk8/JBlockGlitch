@@ -10,6 +10,7 @@ public final class JBlockGlitchPlugin extends JavaPlugin {
     private MessageService messageService;
     private ModeService modeService;
     private ListenerBootstrap listenerBootstrap;
+    private MetricsBootstrap metricsBootstrap;
 
     @Override
     public void onEnable() {
@@ -27,7 +28,7 @@ public final class JBlockGlitchPlugin extends JavaPlugin {
         listenerBootstrap = new ListenerBootstrap(this, modeService);
         listenerBootstrap.register();
 
-        var metricsBootstrap = new MetricsBootstrap(this);
+        metricsBootstrap = new MetricsBootstrap(this);
         metricsBootstrap.register();
     }
 
@@ -37,12 +38,17 @@ public final class JBlockGlitchPlugin extends JavaPlugin {
             listenerBootstrap.shutdown();
             listenerBootstrap = null;
         }
+        if (metricsBootstrap != null) {
+            metricsBootstrap.shutdown();
+            metricsBootstrap = null;
+        }
     }
 
     public void reload() {
         reloadConfig();
         messageService.load();
         modeService.reload();
+        metricsBootstrap.reload();
         listenerBootstrap.reload();
     }
 }
