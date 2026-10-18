@@ -10,6 +10,19 @@ text-format: minimessage
 # Default: true
 toggle-anonymous-statistics: true
 
+# Sounds played with plugin messages. 'neutral' plays on info and success
+# messages, 'angry' on errors and command usage. Names are vanilla sound
+# keys (minecraft: namespace is assumed).
+sounds:
+  neutral:
+    sound: block.chain.step
+    volume: 0.9
+    pitch: 1.2
+  angry:
+    sound: block.chain.break
+    volume: 0.7
+    pitch: 0.8
+
 # Settings for configuring protected block placements validation.
 # This matters for protection plugins like WorldGuard, GriefPrevention, and others.
 protected-block:

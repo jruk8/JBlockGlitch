@@ -1,9 +1,13 @@
 package com.jruk8.jblockglitch;
 
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -65,6 +69,92 @@ class MessageServiceTest {
                 """, "minimessage");
 
         assertEquals("[JBlockGlitch] Nope", sentPlainText(service, service::sendNoPermission));
+    }
+
+    @Test
+    void errorMessagesPlayAngrySound() throws Exception {
+        MessageService service = serviceWithMessages("no-permission: \"Nope\"\n", "minimessage");
+        Player player = mock(Player.class);
+
+        service.sendNoPermission(player);
+
+        Sound sound = captureSound(player);
+        assertEquals(Key.key("minecraft:block.chain.break"), sound.name());
+        assertEquals(0.7F, sound.volume());
+        assertEquals(0.8F, sound.pitch());
+    }
+
+    @Test
+    void successMessagesPlayNeutralSound() throws Exception {
+        MessageService service = serviceWithMessages("reload-success: \"Done\"\n", "minimessage");
+        Player player = mock(Player.class);
+
+        service.sendReloadSuccess(player);
+
+        Sound sound = captureSound(player);
+        assertEquals(Key.key("minecraft:block.chain.step"), sound.name());
+        assertEquals(0.9F, sound.volume());
+        assertEquals(1.2F, sound.pitch());
+    }
+
+    @Test
+    void consoleSendersHearNoSound() throws Exception {
+        MessageService service = serviceWithMessages("no-permission: \"Nope\"\n", "minimessage");
+        CommandSender console = mock(CommandSender.class);
+
+        service.sendNoPermission(console);
+
+        org.mockito.Mockito.verify(console).sendMessage(org.mockito.ArgumentMatchers.any(Component.class));
+    }
+
+    private Sound captureSound(Player player) {
+        ArgumentCaptor<Sound> captor = ArgumentCaptor.forClass(Sound.class);
+        org.mockito.Mockito.verify(player).playSound(captor.capture());
+        return captor.getValue();
+    }
+
+    @Test
+    void brandColorResolvesInsidePrefixAndMessages() throws Exception {
+        MessageService service = serviceWithMessages("""
+                prefix: "[<{brand-col}>T] "
+                brand-color: "#5adbc8"
+                no-permission: "{prefix}Nope"
+                """, "minimessage");
+
+        CommandSender sender = mock(CommandSender.class);
+        service.sendNoPermission(sender);
+
+        ArgumentCaptor<Component> captor = ArgumentCaptor.forClass(Component.class);
+        org.mockito.Mockito.verify(sender).sendMessage(captor.capture());
+        String serialized = MiniMessage.miniMessage().serialize(captor.getValue()).toLowerCase();
+
+        assertTrue(serialized.contains("#5adbc8"), serialized);
+        assertTrue(!serialized.contains("{brand-col}"), serialized);
+    }
+
+    @Test
+    void missingBrandColorFallsBackToDefault() throws Exception {
+        MessageService service = serviceWithMessages("""
+                no-permission: "<{brand-col}>Nope"
+                """, "minimessage");
+
+        CommandSender sender = mock(CommandSender.class);
+        service.sendNoPermission(sender);
+
+        ArgumentCaptor<Component> captor = ArgumentCaptor.forClass(Component.class);
+        org.mockito.Mockito.verify(sender).sendMessage(captor.capture());
+        String serialized = MiniMessage.miniMessage().serialize(captor.getValue()).toLowerCase();
+
+        assertTrue(serialized.contains("#5adbc8"), serialized);
+    }
+
+    @Test
+    void configDefaultsRenderBulletsAndSpacing() throws Exception {
+        MessageService service = serviceWithMessages("no-permission: \"Nope\"\n", "minimessage");
+
+        assertEquals("\n[JBlockGlitch] » key: value",
+                sentPlainText(service, sender -> service.sendConfigValue(sender, "key", "value")));
+        assertTrue(sentPlainText(service, service::sendConfigUsage).contains("» /jbg config [key] [value]"));
     }
 
     @Test

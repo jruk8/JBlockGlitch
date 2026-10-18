@@ -13,18 +13,6 @@ commands:
     aliases:
       - jbg
     permission: jblockglitch.help
-  help:
-    description: Show JBlockGlitch documentation
-    usage: /jblockglitch:help
-    permission: jblockglitch.help
-  reload:
-    description: Reload JBlockGlitch configuration and messages
-    usage: /jblockglitch:reload
-    permission: jblockglitch.reload
-  config:
-    description: View or change JBlockGlitch settings in-game
-    usage: /jblockglitch:config [key] [value]
-    permission: jblockglitch.config
 
 permissions:
   jblockglitch.help:
