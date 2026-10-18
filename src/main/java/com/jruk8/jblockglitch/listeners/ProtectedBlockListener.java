@@ -17,9 +17,11 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.GameMode;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.BoundingBox;
 
 /**
  * Listens for block placement events that are denied by the server and prevents
@@ -39,6 +41,12 @@ public final class ProtectedBlockListener implements Listener {
 
     private static final long MOVEMENT_BACKSTOP_MILLIS = 250L;
 
+    /**
+     * Required penetration depth for the obstruction skip. Grazing
+     * touches within a centimeter fall through to normal handling.
+     */
+    private static final double OBSTRUCTION_MARGIN = 0.01;
+
     private final ModeService modeService;
     private final Map<UUID, DeniedPlacement> deniedPlacements = new HashMap<>();
 
@@ -53,6 +61,13 @@ public final class ProtectedBlockListener implements Listener {
         }
 
         if (!event.isCancelled()) {
+            return;
+        }
+
+        ItemStack placedItem = event.getItemInHand();
+        Material placedType = placedItem == null ? null : placedItem.getType();
+
+        if (isObstructedPlacement(event.getPlayer(), placedType, event.getBlockPlaced().getLocation())) {
             return;
         }
 
@@ -173,11 +188,47 @@ public final class ProtectedBlockListener implements Listener {
 
         Block target = clicked.getRelative(event.getBlockFace());
 
+        if (isObstructedPlacement(event.getPlayer(), event.getItem().getType(), target.getLocation())) {
+            return;
+        }
+
         handleBlockEvent(
                 event.getPlayer(),
                 target.getLocation(),
                 target.getBlockData()
         );
+    }
+
+    /**
+     * True when the placer deeply overlaps the target cube with a fully
+     * occluding block type. Vanilla itself rejects such placements, so no
+     * ghost can form and handling would only false-positive (for example
+     * placing at your own feet).
+     *
+     * <p>Conservative by design so it can never bypass real detection:
+     * creative mode, unknown items, non-occluding types, and grazing
+     * touches all fall through to normal handling, and any failure in
+     * the check itself does the same.
+     */
+    private boolean isObstructedPlacement(Player player, Material placedType, Location target) {
+        if (player.getGameMode() == GameMode.CREATIVE) {
+            return false;
+        }
+
+        if (placedType == null || !placedType.isBlock() || !placedType.isOccluding()) {
+            return false;
+        }
+
+        try {
+            int x = target.getBlockX();
+            int y = target.getBlockY();
+            int z = target.getBlockZ();
+            BoundingBox cube = new BoundingBox(x, y, z, x + 1, y + 1, z + 1);
+            BoundingBox shrunk = player.getBoundingBox().clone().expand(-OBSTRUCTION_MARGIN);
+            return shrunk.overlaps(cube);
+        } catch (RuntimeException failed) {
+            return false;
+        }
     }
 
     private boolean isBucket(Material material) {
