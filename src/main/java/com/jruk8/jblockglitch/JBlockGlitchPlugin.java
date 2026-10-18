@@ -6,7 +6,7 @@ import com.jruk8.jblockglitch.listeners.ModeService;
 import com.jruk8.jblockglitch.updatechecker.UpdateCheckerBootstrap;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public final class JBlockGlitchPlugin extends JavaPlugin {
+public class JBlockGlitchPlugin extends JavaPlugin {
 
     private MessageService messageService;
     private ModeService modeService;
@@ -54,11 +54,24 @@ public final class JBlockGlitchPlugin extends JavaPlugin {
     }
 
     public void reload() {
+        ensureDefaultFiles();
+
         reloadConfig();
         messageService.load();
         modeService.reload();
         metricsBootstrap.reload();
         listenerBootstrap.reload();
         updateCheckerBootstrap.checkNow();
+    }
+
+    /**
+     * Recreates the data folder and any missing default files so a
+     * deleted data folder (or a single deleted file) heals on reload
+     * instead of only on restart.
+     */
+    void ensureDefaultFiles() {
+        getDataFolder().mkdirs();
+        saveDefaultConfig();
+        saveResource("messages.yml", false);
     }
 }
