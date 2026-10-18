@@ -31,7 +31,12 @@ public final class CommandBootstrap implements Bootstrap {
         Objects.requireNonNull(pluginReloadCommand).setExecutor(reloadCommand);
         Objects.requireNonNull(pluginReloadCommand).setTabCompleter(reloadCommand);
 
-        JBlockGlitchCommand jBlockGlitchCommand = new JBlockGlitchCommand(helpCommand, reloadCommand);
+        ConfigCommand configCommand = new ConfigCommand(plugin, messageService);
+        var pluginConfigCommand = plugin.getCommand("config");
+        Objects.requireNonNull(pluginConfigCommand).setExecutor(configCommand);
+        Objects.requireNonNull(pluginConfigCommand).setTabCompleter(configCommand);
+
+        JBlockGlitchCommand jBlockGlitchCommand = new JBlockGlitchCommand(helpCommand, reloadCommand, configCommand);
         var pluginJBlockGlitchCommand = plugin.getCommand("jblockglitch");
         Objects.requireNonNull(pluginJBlockGlitchCommand).setExecutor(jBlockGlitchCommand);
         Objects.requireNonNull(pluginJBlockGlitchCommand).setTabCompleter(jBlockGlitchCommand);

@@ -3,6 +3,7 @@ package com.jruk8.jblockglitch;
 import java.io.File;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -18,12 +19,27 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class MessageService {
 
     private static final String DEFAULT_PREFIX = "<dark_gray>[<aqua>JBlockGlitch<dark_gray>] ";
+    private static final String DEFAULT_CONFIG_HEADER = "{prefix}<gray>Current configuration:";
+    private static final String DEFAULT_CONFIG_ENTRY = "{prefix}<gray>{key}<dark_gray>: <white>{value}";
+    private static final String DEFAULT_CONFIG_UPDATED =
+            "{prefix}<green>Set <white>{key}<green> to <white>{value}<green>.";
+    private static final String DEFAULT_CONFIG_UNKNOWN_KEY =
+            "{prefix}<red>Unknown config key '<white>{key}<red>'. Valid keys: <white>{keys}<red>.";
+    private static final String DEFAULT_CONFIG_INVALID_VALUE =
+            "{prefix}<red>Invalid value '<white>{value}<red>' for <white>{key}<red>. Allowed: <white>{allowed}<red>.";
+    private static final String DEFAULT_CONFIG_USAGE = "{prefix}<gray>Usage: <white>/jbg config [key] [value]";
 
     private final JavaPlugin plugin;
     private String prefix = DEFAULT_PREFIX;
     private List<String> helpLines = List.of();
     private String noPermissionMessage = "";
     private String reloadSuccessMessage = "";
+    private String configHeaderMessage = DEFAULT_CONFIG_HEADER;
+    private String configEntryMessage = DEFAULT_CONFIG_ENTRY;
+    private String configUpdatedMessage = DEFAULT_CONFIG_UPDATED;
+    private String configUnknownKeyMessage = DEFAULT_CONFIG_UNKNOWN_KEY;
+    private String configInvalidValueMessage = DEFAULT_CONFIG_INVALID_VALUE;
+    private String configUsageMessage = DEFAULT_CONFIG_USAGE;
     private TextFormat textFormat = TextFormat.MINIMESSAGE;
 
     public MessageService(JavaPlugin plugin) {
@@ -53,6 +69,38 @@ public final class MessageService {
         sender.sendMessage(deserialize(prefix + detail));
     }
 
+    public void sendConfigList(CommandSender sender, Map<String, String> entries) {
+        sender.sendMessage(deserialize(configHeaderMessage));
+        for (Map.Entry<String, String> entry : entries.entrySet()) {
+            sender.sendMessage(deserialize(fillPlaceholders(configEntryMessage,
+                    Map.of("key", entry.getKey(), "value", entry.getValue()))));
+        }
+    }
+
+    public void sendConfigValue(CommandSender sender, String key, String value) {
+        sender.sendMessage(deserialize(fillPlaceholders(configEntryMessage,
+                Map.of("key", key, "value", value))));
+    }
+
+    public void sendConfigUpdated(CommandSender sender, String key, String value) {
+        sender.sendMessage(deserialize(fillPlaceholders(configUpdatedMessage,
+                Map.of("key", key, "value", value))));
+    }
+
+    public void sendConfigUnknownKey(CommandSender sender, String key, String validKeys) {
+        sender.sendMessage(deserialize(fillPlaceholders(configUnknownKeyMessage,
+                Map.of("key", key, "keys", validKeys))));
+    }
+
+    public void sendConfigInvalidValue(CommandSender sender, String key, String value, String allowed) {
+        sender.sendMessage(deserialize(fillPlaceholders(configInvalidValueMessage,
+                Map.of("key", key, "value", value, "allowed", allowed))));
+    }
+
+    public void sendConfigUsage(CommandSender sender) {
+        sender.sendMessage(deserialize(configUsageMessage));
+    }
+
     public void load() {
         File messagesFile = new File(plugin.getDataFolder(), "messages.yml");
         FileConfiguration messages = YamlConfiguration.loadConfiguration(messagesFile);
@@ -60,6 +108,12 @@ public final class MessageService {
         helpLines = messages.getStringList("help-message");
         noPermissionMessage = messages.getString("no-permission", "");
         reloadSuccessMessage = messages.getString("reload-success", "");
+        configHeaderMessage = messages.getString("config-header", DEFAULT_CONFIG_HEADER);
+        configEntryMessage = messages.getString("config-entry", DEFAULT_CONFIG_ENTRY);
+        configUpdatedMessage = messages.getString("config-updated", DEFAULT_CONFIG_UPDATED);
+        configUnknownKeyMessage = messages.getString("config-unknown-key", DEFAULT_CONFIG_UNKNOWN_KEY);
+        configInvalidValueMessage = messages.getString("config-invalid-value", DEFAULT_CONFIG_INVALID_VALUE);
+        configUsageMessage = messages.getString("config-usage", DEFAULT_CONFIG_USAGE);
 
         String configuredFormat = plugin.getConfig().getString("text-format", "minimessage");
         try {
@@ -77,6 +131,14 @@ public final class MessageService {
             return LegacyComponentSerializer.legacyAmpersand().deserialize(rendered);
         }
         return MiniMessage.miniMessage().deserialize(rendered);
+    }
+
+    private String fillPlaceholders(String message, Map<String, String> values) {
+        String rendered = message;
+        for (Map.Entry<String, String> entry : values.entrySet()) {
+            rendered = rendered.replace("{" + entry.getKey() + "}", entry.getValue());
+        }
+        return rendered;
     }
 
     private enum TextFormat {

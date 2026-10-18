@@ -9,7 +9,7 @@ website: ${website}
 commands:
   jblockglitch:
     description: JBlockGlitch main command
-    usage: /jblockglitch <help|reload>
+    usage: /jblockglitch <help|reload|config>
     aliases:
       - jbg
     permission: jblockglitch.help
@@ -21,6 +21,10 @@ commands:
     description: Reload JBlockGlitch configuration and messages
     usage: /jblockglitch:reload
     permission: jblockglitch.reload
+  config:
+    description: View or change JBlockGlitch settings in-game
+    usage: /jblockglitch:config [key] [value]
+    permission: jblockglitch.config
 
 permissions:
   jblockglitch.help:
@@ -31,4 +35,7 @@ permissions:
     default: op
   jblockglitch.admin:
     description: Receive JBlockGlitch update notifications
+    default: op
+  jblockglitch.config:
+    description: View or change JBlockGlitch settings in-game
     default: op
