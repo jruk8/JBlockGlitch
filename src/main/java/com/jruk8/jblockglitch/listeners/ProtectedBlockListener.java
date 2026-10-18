@@ -23,7 +23,10 @@ import org.bukkit.inventory.ItemStack;
 
 /**
  * Listens for block placement events that are denied by the server and prevents
- * players from glitching with the block.
+ * players from glitching with the block. Covers denials at both the place
+ * stage (cancelled {@link org.bukkit.event.block.BlockPlaceEvent}) and the
+ * interact stage (denied {@link PlayerInteractEvent} that never reaches a
+ * place event), so protection plugins work regardless of where they deny.
  *
  * MEDIUM mode simply rubberbands the player back to their last-tick location
  * on all axes with no exceptions.
@@ -91,6 +94,11 @@ public final class ProtectedBlockListener implements Listener {
         );
     }
 
+    /**
+     * Catches placements denied at the interact stage, where the engine
+     * never fires {@link BlockPlaceEvent} (or bucket events). Some
+     * protection plugins deny here instead of at the place stage.
+     */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (!modeService.protectedBlockEnabled()) {
@@ -101,7 +109,14 @@ public final class ProtectedBlockListener implements Listener {
             return;
         }
 
-        if (event.useInteractedBlock() != Event.Result.DENY) {
+        if (event.useInteractedBlock() != Event.Result.DENY
+                && event.useItemInHand() != Event.Result.DENY) {
+            return;
+        }
+
+        // Explicitly allowed item use still reaches placement, so the
+        // place-stage handler owns that outcome and this one stays out.
+        if (event.useItemInHand() == Event.Result.ALLOW) {
             return;
         }
 
@@ -112,14 +127,21 @@ public final class ProtectedBlockListener implements Listener {
 
         Material material = item.getType();
 
-        if (material != Material.WATER_BUCKET
-                && material != Material.LAVA_BUCKET
-                && material != Material.POWDER_SNOW_BUCKET) {
+        if (isBucket(material)) {
+            handleDeniedBucket(event, material);
             return;
         }
 
+        if (!material.isBlock()) {
+            return;
+        }
+
+        handleDeniedBlockPlacement(event);
+    }
+
+    private void handleDeniedBucket(PlayerInteractEvent event, Material material) {
         Block clicked = event.getClickedBlock();
-        if (clicked == null) {
+        if (clicked == null || event.getBlockFace() == null) {
             return;
         }
 
@@ -130,6 +152,38 @@ public final class ProtectedBlockListener implements Listener {
                 target.getLocation(),
                 attemptedBucketData(material)
         );
+    }
+
+    /**
+     * Resyncs a solid-block placement denied at the interact stage. Only
+     * interactions that would actually place reach here: the clicked
+     * block is not interactable, or the player is sneaking past its GUI.
+     * Anything else (chests opened, tools swung, menu clicks) is left
+     * alone so unrelated plugins never trigger a rubberband.
+     */
+    private void handleDeniedBlockPlacement(PlayerInteractEvent event) {
+        Block clicked = event.getClickedBlock();
+        if (clicked == null || event.getBlockFace() == null) {
+            return;
+        }
+
+        if (clicked.getType().isInteractable() && !event.getPlayer().isSneaking()) {
+            return;
+        }
+
+        Block target = clicked.getRelative(event.getBlockFace());
+
+        handleBlockEvent(
+                event.getPlayer(),
+                target.getLocation(),
+                target.getBlockData()
+        );
+    }
+
+    private boolean isBucket(Material material) {
+        return material == Material.WATER_BUCKET
+                || material == Material.LAVA_BUCKET
+                || material == Material.POWDER_SNOW_BUCKET;
     }
 
     private BlockData attemptedBucketData(Material material) {
