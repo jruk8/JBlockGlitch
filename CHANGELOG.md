@@ -1,3 +1,12 @@
+## [3.2.2] - 2026-10-18
+
+### 🐛 Bug Fixes
+
+- Regenerate missing data files on reload
+
+### ⚙️ Miscellaneous Tasks
+
+- *(changelog)* Update for v3.2.1 [skip ci]
 ## [3.2.1] - 2026-10-18
 
 ### 🐛 Bug Fixes
