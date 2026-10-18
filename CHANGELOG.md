@@ -1,3 +1,18 @@
+## [3.2.0] - 2026-10-18
+
+### 🚀 Features
+
+- Neutral and angry sounds on messages
+- Message style overhaul with brand color and bullets
+
+### 🐛 Bug Fixes
+
+- Handle solid blocks denied at the interact stage
+- Stop shadowing root-level help, reload, and config commands
+
+### 📚 Documentation
+
+- Seed CHANGELOG.md for release changelog job
 # Changelog
 ## [3.1.0] - 2026-10-18
 
