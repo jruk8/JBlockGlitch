@@ -1,10 +1,23 @@
 # This file contains player-facing JBlockGlitch messages.
 # Additional message sections can be added here as the plugin grows.
+#
+# {prefix} is replaced with the prefix below in every message.
+
+prefix: "<dark_gray>[<aqua>JBlockGlitch<dark_gray>] "
 
 help-message:
-  - "<dark_gray>[<aqua>JBlockGlitch<dark_gray>] <gray>Prevents block-placement glitches in protected regions."
-  - "<dark_gray>[<aqua>JBlockGlitch<dark_gray>] <gray>Use <white>/jblockglitch help<gray> or <white>/jbg<gray> for this help."
-  - "<dark_gray>[<aqua>JBlockGlitch<dark_gray>] <gray>Use <white>/jblockglitch reload<gray> to reload configuration and messages."
+  - "{prefix}<gray>Prevents block-placement glitches in protected regions."
+  - "{prefix}<gray>Use <white>/jblockglitch help<gray> or <white>/jbg<gray> for this help."
+  - "{prefix}<gray>Use <white>/jblockglitch reload<gray> to reload configuration and messages."
+  - "{prefix}<gray>Use <white>/jblockglitch config [key] [value]<gray> to view or change settings in-game."
 
-no-permission: "<dark_gray>[<aqua>JBlockGlitch<dark_gray>] <red>You do not have permission to use this command."
-reload-success: "<dark_gray>[<aqua>JBlockGlitch<dark_gray>] <green>Configuration and messages reloaded."
+no-permission: "{prefix}<red>You do not have permission to use this command."
+reload-success: "{prefix}<green>Configuration and messages reloaded."
+
+# Placeholders: {key}, {value}, {keys}, {allowed}.
+config-header: "{prefix}<gray>Current configuration:"
+config-entry: "{prefix}<gray>{key}<dark_gray>: <white>{value}"
+config-updated: "{prefix}<green>Set <white>{key}<green> to <white>{value}<green>."
+config-unknown-key: "{prefix}<red>Unknown config key '<white>{key}<red>'. Valid keys: <white>{keys}<red>."
+config-invalid-value: "{prefix}<red>Invalid value '<white>{value}<red>' for <white>{key}<red>. Allowed: <white>{allowed}<red>."
+config-usage: "{prefix}<gray>Usage: <white>/jbg config [key] [value]"

@@ -3,6 +3,13 @@
 # Default: minimessage
 text-format: minimessage
 
+# Controls whether anonymous usage statistics are sent to bStats
+# (https://bstats.org). Only aggregated, non-identifying data is sent.
+# Set to false to opt out.
+#
+# Default: true
+toggle-anonymous-statistics: true
+
 # Settings for configuring protected block placements validation.
 # This matters for protection plugins like WorldGuard, GriefPrevention, and others.
 protected-block:
@@ -47,9 +54,33 @@ ghost-item:
   # item generation, or ghost blocks that protected block detection may
   # sometimes miss.
   #
+  # Only players who moved since the previous resync are processed, so
+  # stationary players cost nothing.
+  #
   # A value of -1 disables checking entirely. A value of 1 will likely prevent
   # almost everything, but may cause lag. Choose a value suitable for your
   # server's needs.
   #
   # Default: 5 ticks (4 times per second)
   resync-tick-interval: 5
+
+# Settings for the update checker. It compares the running version against
+# the latest GitHub release (https://github.com/jruk8/JBlockGlitch/releases)
+# and notifies players with the jblockglitch.admin permission.
+update-checker:
+  # Master switch for update checking.
+  #
+  # Default: true
+  enabled: true
+
+  # Which release severities notify. A release only notifies when its
+  # severity over the running version is enabled here.
+  releases:
+    # Default: true
+    major: true
+
+    # Default: true
+    minor: true
+
+    # Default: true
+    hotfix: true

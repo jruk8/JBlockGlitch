@@ -3,6 +3,7 @@ package com.jruk8.jblockglitch;
 import com.jruk8.jblockglitch.commands.CommandBootstrap;
 import com.jruk8.jblockglitch.listeners.ListenerBootstrap;
 import com.jruk8.jblockglitch.listeners.ModeService;
+import com.jruk8.jblockglitch.updatechecker.UpdateCheckerBootstrap;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class JBlockGlitchPlugin extends JavaPlugin {
@@ -10,6 +11,8 @@ public final class JBlockGlitchPlugin extends JavaPlugin {
     private MessageService messageService;
     private ModeService modeService;
     private ListenerBootstrap listenerBootstrap;
+    private MetricsBootstrap metricsBootstrap;
+    private UpdateCheckerBootstrap updateCheckerBootstrap;
 
     @Override
     public void onEnable() {
@@ -27,8 +30,11 @@ public final class JBlockGlitchPlugin extends JavaPlugin {
         listenerBootstrap = new ListenerBootstrap(this, modeService);
         listenerBootstrap.register();
 
-        var metricsBootstrap = new MetricsBootstrap(this);
+        metricsBootstrap = new MetricsBootstrap(this);
         metricsBootstrap.register();
+
+        updateCheckerBootstrap = new UpdateCheckerBootstrap(this, messageService);
+        updateCheckerBootstrap.register();
     }
 
     @Override
@@ -37,12 +43,22 @@ public final class JBlockGlitchPlugin extends JavaPlugin {
             listenerBootstrap.shutdown();
             listenerBootstrap = null;
         }
+        if (metricsBootstrap != null) {
+            metricsBootstrap.shutdown();
+            metricsBootstrap = null;
+        }
+        if (updateCheckerBootstrap != null) {
+            updateCheckerBootstrap.shutdown();
+            updateCheckerBootstrap = null;
+        }
     }
 
     public void reload() {
         reloadConfig();
         messageService.load();
         modeService.reload();
+        metricsBootstrap.reload();
         listenerBootstrap.reload();
+        updateCheckerBootstrap.checkNow();
     }
 }
