@@ -1,3 +1,12 @@
+## [3.2.1] - 2026-10-18
+
+### 🐛 Bug Fixes
+
+- Brand-colored update notice with Modrinth and GitHub links
+
+### ⚙️ Miscellaneous Tasks
+
+- *(changelog)* Update for v3.2.0 [skip ci]
 ## [3.2.0] - 2026-10-18
 
 ### 🚀 Features
