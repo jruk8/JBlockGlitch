@@ -1,3 +1,12 @@
+## [3.2.4] - 2026-10-18
+
+### 🐛 Bug Fixes
+
+- Skip handling for self-obstructed placements
+
+### ⚙️ Miscellaneous Tasks
+
+- *(changelog)* Update for v3.2.3 [skip ci]
 ## [3.2.3] - 2026-10-18
 
 ### 🐛 Bug Fixes
