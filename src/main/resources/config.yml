@@ -47,6 +47,9 @@ ghost-item:
   # item generation, or ghost blocks that protected block detection may
   # sometimes miss.
   #
+  # Only players who moved since the previous resync are processed, so
+  # stationary players cost nothing.
+  #
   # A value of -1 disables checking entirely. A value of 1 will likely prevent
   # almost everything, but may cause lag. Choose a value suitable for your
   # server's needs.

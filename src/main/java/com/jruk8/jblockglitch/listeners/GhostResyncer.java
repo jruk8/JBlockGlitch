@@ -7,8 +7,8 @@ import org.bukkit.entity.Player;
 
 public class GhostResyncer {
 
-    private int RESYNC_BELOW = 1; // blocks below the player's feet
-    private int RESYNC_ABOVE = 2; // blocks above the player's feet
+    private static final int RESYNC_BELOW = 1; // blocks below the player's feet
+    private static final int RESYNC_ABOVE = 2; // blocks above the player's feet
 
     /**
      * Sends block change packets to the player for all blocks in a quadrant-
@@ -67,6 +67,11 @@ public class GhostResyncer {
         minY = Math.max(minY, worldMinY);
         maxY = Math.min(maxY, worldMaxY - 1);
 
+        sendBlockChanges(player, world, minX, maxX, minY, maxY, minZ, maxZ);
+    }
+
+    private void sendBlockChanges(Player player, World world, int minX, int maxX,
+            int minY, int maxY, int minZ, int maxZ) {
         for (int x = minX; x <= maxX; x++) {
             for (int y = minY; y <= maxY; y++) {
                 for (int z = minZ; z <= maxZ; z++) {
