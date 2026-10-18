@@ -29,3 +29,6 @@ permissions:
   jblockglitch.reload:
     description: Reload JBlockGlitch configuration and messages
     default: op
+  jblockglitch.admin:
+    description: Receive JBlockGlitch update notifications
+    default: op

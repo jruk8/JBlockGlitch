@@ -49,6 +49,10 @@ public final class MessageService {
         sender.sendMessage(deserialize(reloadSuccessMessage));
     }
 
+    public void sendUpdateAvailable(CommandSender sender, String detail) {
+        sender.sendMessage(deserialize(prefix + detail));
+    }
+
     public void load() {
         File messagesFile = new File(plugin.getDataFolder(), "messages.yml");
         FileConfiguration messages = YamlConfiguration.loadConfiguration(messagesFile);

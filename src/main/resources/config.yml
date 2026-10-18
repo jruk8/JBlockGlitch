@@ -63,3 +63,24 @@ ghost-item:
   #
   # Default: 5 ticks (4 times per second)
   resync-tick-interval: 5
+
+# Settings for the update checker. It compares the running version against
+# the latest GitHub release (https://github.com/jruk8/JBlockGlitch/releases)
+# and notifies players with the jblockglitch.admin permission.
+update-checker:
+  # Master switch for update checking.
+  #
+  # Default: true
+  enabled: true
+
+  # Which release severities notify. A release only notifies when its
+  # severity over the running version is enabled here.
+  releases:
+    # Default: true
+    major: true
+
+    # Default: true
+    minor: true
+
+    # Default: true
+    hotfix: true
