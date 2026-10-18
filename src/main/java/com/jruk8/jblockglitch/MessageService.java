@@ -17,7 +17,10 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public final class MessageService {
 
+    private static final String DEFAULT_PREFIX = "<dark_gray>[<aqua>JBlockGlitch<dark_gray>] ";
+
     private final JavaPlugin plugin;
+    private String prefix = DEFAULT_PREFIX;
     private List<String> helpLines = List.of();
     private String noPermissionMessage = "";
     private String reloadSuccessMessage = "";
@@ -25,6 +28,11 @@ public final class MessageService {
 
     public MessageService(JavaPlugin plugin) {
         this.plugin = plugin;
+    }
+
+    /** The raw configured prefix, before text-format parsing. */
+    public String prefix() {
+        return prefix;
     }
 
     public void sendHelp(CommandSender sender) {
@@ -44,6 +52,7 @@ public final class MessageService {
     public void load() {
         File messagesFile = new File(plugin.getDataFolder(), "messages.yml");
         FileConfiguration messages = YamlConfiguration.loadConfiguration(messagesFile);
+        prefix = messages.getString("prefix", DEFAULT_PREFIX);
         helpLines = messages.getStringList("help-message");
         noPermissionMessage = messages.getString("no-permission", "");
         reloadSuccessMessage = messages.getString("reload-success", "");
@@ -59,10 +68,11 @@ public final class MessageService {
     }
 
     private Component deserialize(String message) {
+        String rendered = message.replace("{prefix}", prefix);
         if (textFormat == TextFormat.LEGACY) {
-            return LegacyComponentSerializer.legacyAmpersand().deserialize(message);
+            return LegacyComponentSerializer.legacyAmpersand().deserialize(rendered);
         }
-        return MiniMessage.miniMessage().deserialize(message);
+        return MiniMessage.miniMessage().deserialize(rendered);
     }
 
     private enum TextFormat {
