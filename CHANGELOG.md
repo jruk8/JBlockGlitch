@@ -1,3 +1,12 @@
+## [3.2.3] - 2026-10-18
+
+### 🐛 Bug Fixes
+
+- *(ux)* Numerous message formatting issues
+
+### ⚙️ Miscellaneous Tasks
+
+- *(changelog)* Update for v3.2.2 [skip ci]
 ## [3.2.2] - 2026-10-18
 
 ### 🐛 Bug Fixes
