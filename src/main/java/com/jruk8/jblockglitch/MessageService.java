@@ -1,5 +1,6 @@
 package com.jruk8.jblockglitch;
 
+import com.jruk8.jblockglitch.updatechecker.UpdateAvailable;
 import java.io.File;
 import java.util.List;
 import java.util.Locale;
@@ -32,6 +33,11 @@ public final class MessageService {
     private static final String DEFAULT_CONFIG_INVALID_VALUE =
             "{prefix}<red>Invalid value '<white>{value}<red>' for <white>{key}<red>. Allowed: <white>{allowed}<red>.";
     private static final String DEFAULT_CONFIG_USAGE = "{prefix}<gray>» <white>/jbg config [key] [value]";
+    private static final String DEFAULT_UPDATE_AVAILABLE =
+            "\n{prefix}{brand-color}An update for <white>JBlockGlitch {new-version}</white>"
+            + " is available <white>(curr {curr})</white>.\n<white>[<click:open_url:"
+            + "'https://modrinth.com/plugin/jblockglitch'><#1BD96A>Modrinth</#1BD96A></click>]"
+            + " --**-- [<click:open_url:'{url}'><#4a9bd9>GitHub</#4a9bd9></click>]</white>";
 
     private final JavaPlugin plugin;
     private String prefix = DEFAULT_PREFIX;
@@ -45,6 +51,7 @@ public final class MessageService {
     private String configUnknownKeyMessage = DEFAULT_CONFIG_UNKNOWN_KEY;
     private String configInvalidValueMessage = DEFAULT_CONFIG_INVALID_VALUE;
     private String configUsageMessage = DEFAULT_CONFIG_USAGE;
+    private String updateAvailableMessage = DEFAULT_UPDATE_AVAILABLE;
     private TextFormat textFormat = TextFormat.MINIMESSAGE;
     private SoundConfig neutralSound = defaultNeutralSound();
     private SoundConfig angrySound = defaultAngrySound();
@@ -75,8 +82,11 @@ public final class MessageService {
         playSound(sender, neutralSound);
     }
 
-    public void sendUpdateAvailable(CommandSender sender, String detail) {
-        sender.sendMessage(deserialize(prefix + detail));
+    public void sendUpdateAvailable(CommandSender sender, UpdateAvailable update) {
+        sender.sendMessage(deserialize(fillPlaceholders(updateAvailableMessage, Map.of(
+                "new-version", update.newVersion(),
+                "curr", update.currentVersion(),
+                "url", update.url()))));
         playSound(sender, neutralSound);
     }
 
@@ -132,6 +142,7 @@ public final class MessageService {
         configUnknownKeyMessage = messages.getString("config-unknown-key", DEFAULT_CONFIG_UNKNOWN_KEY);
         configInvalidValueMessage = messages.getString("config-invalid-value", DEFAULT_CONFIG_INVALID_VALUE);
         configUsageMessage = messages.getString("config-usage", DEFAULT_CONFIG_USAGE);
+        updateAvailableMessage = messages.getString("update-available", DEFAULT_UPDATE_AVAILABLE);
 
         neutralSound = loadSound("sounds.neutral", defaultNeutralSound());
         angrySound = loadSound("sounds.angry", defaultAngrySound());
@@ -147,8 +158,12 @@ public final class MessageService {
     }
 
     private Component deserialize(String message) {
-        // Prefix first: the prefix itself may carry {brand-col}.
-        String rendered = message.replace("{prefix}", prefix).replace("{brand-col}", brandColor);
+        // Prefix first: the prefix itself may carry brand placeholders.
+        // {brand-color} before {brand-col}: the short spelling is a prefix
+        // of the long one and would corrupt it if replaced first.
+        String rendered = message.replace("{prefix}", prefix)
+                .replace("{brand-color}", "<" + brandColor + ">")
+                .replace("{brand-col}", brandColor);
         if (textFormat == TextFormat.LEGACY) {
             return LegacyComponentSerializer.legacyAmpersand().deserialize(rendered);
         }

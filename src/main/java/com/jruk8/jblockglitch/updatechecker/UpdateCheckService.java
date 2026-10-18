@@ -60,8 +60,8 @@ public final class UpdateCheckService {
         }
         String message = "JBlockGlitch " + latest + " is available (running " + current + "): "
                 + release.htmlUrl();
-        pending = new UpdateAvailable(message, latest.toString());
+        pending = new UpdateAvailable(message, latest.toString(), current.toString(), release.htmlUrl());
         logger.info(message);
-        notifier.notifyAdmins(message);
+        notifier.notifyAdmins(pending);
     }
 }

@@ -18,6 +18,6 @@ public final class UpdateCheckJoinListener implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         service.pendingUpdate()
-                .ifPresent(update -> notifier.notifyPlayer(event.getPlayer(), update.message()));
+                .ifPresent(update -> notifier.notifyPlayer(event.getPlayer(), update));
     }
 }

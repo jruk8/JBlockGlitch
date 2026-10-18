@@ -1,6 +1,7 @@
 package com.jruk8.jblockglitch.updatechecker.jblockglitch;
 
 import com.jruk8.jblockglitch.MessageService;
+import com.jruk8.jblockglitch.updatechecker.UpdateAvailable;
 import com.jruk8.jblockglitch.updatechecker.ports.UpdateCheckNotifier;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -17,16 +18,16 @@ public final class JBlockGlitchUpdateCheckNotifier implements UpdateCheckNotifie
     }
 
     @Override
-    public void notifyAdmins(String message) {
+    public void notifyAdmins(UpdateAvailable update) {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            notifyPlayer(player, message);
+            notifyPlayer(player, update);
         }
     }
 
     @Override
-    public void notifyPlayer(Player player, String message) {
+    public void notifyPlayer(Player player, UpdateAvailable update) {
         if (player.hasPermission(ADMIN_PERMISSION)) {
-            messages.sendUpdateAvailable(player, message);
+            messages.sendUpdateAvailable(player, update);
         }
     }
 }

@@ -36,13 +36,13 @@ class UpdateCheckServiceTest {
         final List<String> adminNotices = new ArrayList<>();
 
         @Override
-        public void notifyAdmins(String message) {
-            adminNotices.add(message);
+        public void notifyAdmins(UpdateAvailable update) {
+            adminNotices.add(update.message());
         }
 
         @Override
-        public void notifyPlayer(Player player, String message) {
-            adminNotices.add(message);
+        public void notifyPlayer(Player player, UpdateAvailable update) {
+            adminNotices.add(update.message());
         }
     }
 
