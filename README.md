@@ -59,8 +59,9 @@ through client modifications that never result in a server-side block
 placement event.
 
 The block resynchronization checks an area around the player,
-covering a 2x2x4 region. The interval is configurable and can be 
-disabled independently.
+covering a 2x2x4 region. The interval is configurable and can be
+disabled independently. Only players who moved since the previous
+resync are processed, so stationary players cost nothing.
 
 # Demos
 
@@ -104,14 +105,26 @@ failing after JBlockGlitch is installed.
 | --- | --- | --- |
 | `/jblockglitch help` | `jblockglitch.help` | Shows basic plugin documentation. |
 | `/jblockglitch reload` | `jblockglitch.reload` | Reloads `config.yml` and `messages.yml`. |
+| `/jblockglitch config [key] [value]` | `jblockglitch.config` | Views or changes settings in-game, with tab completion. |
 | `/jbg` | `jblockglitch.help` | Short alias for `/jblockglitch`. |
 
 The help message is configured in `messages.yml` as a multiline list. Messages
 use MiniMessage formatting by default. Set `text-format: legacy` in
 `config.yml` to use legacy `&` color codes instead.
 
-`Config.yml` provides independent options for protected-block detection,
+Every message supports the `{prefix}` placeholder, backed by the `prefix`
+key in `messages.yml`, so the plugin tag can be changed in one place.
+
+`config.yml` provides independent options for protected-block detection,
 ghost-item detection, and nearby ghost-block resynchronization.
+
+Anonymous usage statistics (bStats) are enabled by default and contain no
+identifying data. Set `toggle-anonymous-statistics: false` to opt out.
+
+The update checker compares the running version against the latest GitHub
+release and notifies players with the `jblockglitch.admin` permission. It
+can be disabled with `update-checker.enabled`, and each release severity
+(`major`, `minor`, `hotfix`) can be toggled independently.
 
 If issues occur, regenerate all configuration files and download the latest
 version. If the issue persists, report it to the issue tracker.

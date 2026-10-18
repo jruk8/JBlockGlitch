@@ -78,12 +78,7 @@ public final class ProtectedBlockListener implements Listener {
             return;
         }
 
-        BlockData attemptedBlockData = switch (event.getBucket()) {
-            case WATER_BUCKET -> Material.WATER.createBlockData();
-            case LAVA_BUCKET -> Material.LAVA.createBlockData();
-            case POWDER_SNOW_BUCKET -> Material.POWDER_SNOW.createBlockData();
-            default -> null;
-        };
+        BlockData attemptedBlockData = attemptedBucketData(event.getBucket());
 
         if (attemptedBlockData == null) {
             return;
@@ -130,18 +125,20 @@ public final class ProtectedBlockListener implements Listener {
 
         Block target = clicked.getRelative(event.getBlockFace());
 
-        BlockData attemptedData = switch (material) {
+        handleBlockEvent(
+                event.getPlayer(),
+                target.getLocation(),
+                attemptedBucketData(material)
+        );
+    }
+
+    private BlockData attemptedBucketData(Material material) {
+        return switch (material) {
             case WATER_BUCKET -> Material.WATER.createBlockData();
             case LAVA_BUCKET -> Material.LAVA.createBlockData();
             case POWDER_SNOW_BUCKET -> Material.POWDER_SNOW.createBlockData();
             default -> null;
         };
-
-        handleBlockEvent(
-                event.getPlayer(),
-                target.getLocation(),
-                attemptedData
-        );
     }
 
     private void handleBlockEvent(
