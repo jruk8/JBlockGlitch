@@ -2,8 +2,9 @@
 # Additional message sections can be added here as the plugin grows.
 #
 # {prefix} is replaced with the prefix below in every message.
-# {brand-col} is replaced with the brand color below. Use it inside
+# {brand-col} is replaced with the raw brand color below. Use it inside
 # MiniMessage tags like <{brand-col}>.
+# {brand-color} is replaced with the full brand color tag. Use it bare.
 
 prefix: "<dark_gray>[<{brand-col}>JBlockGlitch<dark_gray>] "
 brand-color: "#5adbc8"
@@ -25,3 +26,6 @@ config-updated: "{prefix}<green>Set <white>{key}<green> to <white>{value}<green>
 config-unknown-key: "{prefix}<red>Unknown config key '<white>{key}<red>'. Valid keys: <white>{keys}<red>."
 config-invalid-value: "{prefix}<red>Invalid value '<white>{value}<red>' for <white>{key}<red>. Allowed: <white>{allowed}<red>."
 config-usage: "{prefix}<gray>» <white>/jbg config [key] [value]"
+
+# Placeholders: {new-version}, {curr}, {url}.
+update-available: "\n{prefix}{brand-color}An update for <white>JBlockGlitch {new-version}</white> is available <white>(curr {curr})</white>.\n<white>[<click:open_url:'https://modrinth.com/plugin/jblockglitch'><#1BD96A>Modrinth</#1BD96A></click>] --**-- [<click:open_url:'{url}'><#4a9bd9>GitHub</#4a9bd9></click>]</white>"

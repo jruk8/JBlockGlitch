@@ -1,5 +1,6 @@
 package com.jruk8.jblockglitch;
 
+import com.jruk8.jblockglitch.updatechecker.UpdateAvailable;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
@@ -155,6 +156,47 @@ class MessageServiceTest {
         assertEquals("\n[JBlockGlitch] » key: value",
                 sentPlainText(service, sender -> service.sendConfigValue(sender, "key", "value")));
         assertTrue(sentPlainText(service, service::sendConfigUsage).contains("» /jbg config [key] [value]"));
+    }
+
+    @Test
+    void brandColorPlaceholderExpandsToFullTag() throws Exception {
+        MessageService service = serviceWithMessages("""
+                brand-color: "#5adbc8"
+                no-permission: "{brand-color}Nope"
+                """, "minimessage");
+
+        CommandSender sender = mock(CommandSender.class);
+        service.sendNoPermission(sender);
+
+        ArgumentCaptor<Component> captor = ArgumentCaptor.forClass(Component.class);
+        org.mockito.Mockito.verify(sender).sendMessage(captor.capture());
+        String serialized = MiniMessage.miniMessage().serialize(captor.getValue()).toLowerCase();
+
+        assertTrue(serialized.contains("#5adbc8"), serialized);
+        assertTrue(!serialized.contains("{brand-col"), serialized);
+    }
+
+    @Test
+    void updateNoticeRendersVersionsAndLinks() throws Exception {
+        MessageService service = serviceWithMessages("no-permission: \"Nope\"\n", "minimessage");
+        UpdateAvailable update = new UpdateAvailable(
+                "plain", "3.2.0", "3.1.0", "https://github.com/jruk8/JBlockGlitch/releases/tag/v3.2.0");
+
+        CommandSender sender = mock(CommandSender.class);
+        service.sendUpdateAvailable(sender, update);
+
+        ArgumentCaptor<Component> captor = ArgumentCaptor.forClass(Component.class);
+        org.mockito.Mockito.verify(sender).sendMessage(captor.capture());
+        String serialized = MiniMessage.miniMessage().serialize(captor.getValue());
+        String plain = PlainTextComponentSerializer.plainText().serialize(captor.getValue());
+
+        assertTrue(serialized.toLowerCase().contains("#5adbc8"), serialized);
+        assertTrue(plain.contains("JBlockGlitch 3.2.0"), plain);
+        assertTrue(plain.contains("(curr 3.1.0)"), plain);
+        assertTrue(serialized.contains("open_url"), serialized);
+        assertTrue(serialized.contains("https://modrinth.com/plugin/jblockglitch"), serialized);
+        assertTrue(serialized.contains("https://github.com/jruk8/JBlockGlitch/releases/tag/v3.2.0"), serialized);
+        assertTrue(plain.contains("[Modrinth] --**-- [GitHub]"), plain);
     }
 
     @Test
