@@ -12,6 +12,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -85,6 +86,36 @@ class ProtectedBlockListenerTest {
     @Test
     void deniedSolidPlacementRubberbandsNextMove() {
         Block clicked = blockAt(10, 64, 10, Material.STONE);
+        server.getPluginManager().callEvent(deniedInteract(Material.DIRT, clicked));
+
+        Location after = moveTo(10.5, 65.0, 10.5);
+
+        assertEquals(0.5, after.getX());
+        assertEquals(0.5, after.getZ());
+    }
+
+    private void stampIntercept(long atMillis) {
+        player.setMetadata("jmanhunt:intercept-consumed",
+                new FixedMetadataValue(MockBukkit.createMockPlugin(), atMillis));
+    }
+
+    @Test
+    void freshInterceptStampSkipsHandling() {
+        Block clicked = blockAt(10, 64, 10, Material.STONE);
+        stampIntercept(System.currentTimeMillis());
+        server.getPluginManager().callEvent(deniedInteract(Material.DIRT, clicked));
+
+        Location after = moveTo(10.5, 65.0, 10.5);
+
+        assertEquals(10.5, after.getX());
+        assertEquals(65.0, after.getY());
+        assertEquals(10.5, after.getZ());
+    }
+
+    @Test
+    void staleInterceptStampStillHandled() {
+        Block clicked = blockAt(10, 64, 10, Material.STONE);
+        stampIntercept(System.currentTimeMillis() - 5000);
         server.getPluginManager().callEvent(deniedInteract(Material.DIRT, clicked));
 
         Location after = moveTo(10.5, 65.0, 10.5);

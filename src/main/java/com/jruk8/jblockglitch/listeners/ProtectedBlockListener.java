@@ -21,6 +21,7 @@ import org.bukkit.GameMode;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.MetadataValue;
 import org.bukkit.util.BoundingBox;
 
 /**
@@ -46,6 +47,15 @@ public final class ProtectedBlockListener implements Listener {
      * touches within a centimeter fall through to normal handling.
      */
     private static final double OBSTRUCTION_MARGIN = 0.01;
+
+    /**
+     * JManhunt compat: air interceptions stamp this player metadata
+     * key with millis when a modifier consumes a placement. The
+     * cancel is theirs, not a protection denial, so no ghost can
+     * form. Fresh stamps skip denial handling.
+     */
+    private static final String INTERCEPT_CONSUMED_KEY = "jmanhunt:intercept-consumed";
+    private static final long INTERCEPT_FRESH_MILLIS = 500L;
 
     private final ModeService modeService;
     private final Map<UUID, DeniedPlacement> deniedPlacements = new HashMap<>();
@@ -231,6 +241,25 @@ public final class ProtectedBlockListener implements Listener {
         }
     }
 
+    /**
+     * True when JManhunt consumed one of this player's placements
+     * within the freshness window. Conservative by design: missing
+     * or unreadable stamps fall through to normal handling, so a
+     * broken handshake can never bypass real detection.
+     */
+    private boolean hasFreshInterceptStamp(Player player) {
+        try {
+            for (MetadataValue value : player.getMetadata(INTERCEPT_CONSUMED_KEY)) {
+                if (System.currentTimeMillis() - value.asLong() < INTERCEPT_FRESH_MILLIS) {
+                    return true;
+                }
+            }
+        } catch (RuntimeException failed) {
+            return false;
+        }
+        return false;
+    }
+
     private boolean isBucket(Material material) {
         return material == Material.WATER_BUCKET
                 || material == Material.LAVA_BUCKET
@@ -251,6 +280,10 @@ public final class ProtectedBlockListener implements Listener {
             Location blockLocation,
             BlockData attemptedBlockData
     ) {
+        if (hasFreshInterceptStamp(player)) {
+            return;
+        }
+
         player.sendBlockChange(blockLocation, attemptedBlockData);
 
         DeniedPlacement deniedPlacement = new DeniedPlacement(
