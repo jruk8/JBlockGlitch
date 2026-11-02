@@ -1,4 +1,4 @@
-package com.jruk8.jblockglitch;
+package com.jruk8.jblockglitch.core;
 
 /**
  * Common contract for plugin subsystems that need to register
