@@ -1,144 +1,80 @@
-![JBlockGlitch banner](JBlockGlitch-banner-1280x640.png)
-# JBlockGlitch
+<div align="center">
 
-JBlockGlitch is a lightweight Paper plugin that prevents players
-from creating ghost items and from block glitching in protected
-regions.
+![JBlockGlitch banner](https://raw.githubusercontent.com/jruk8/JBlockGlitch/main/docs/assets/banner-1280x640.png)
 
-Download: https://modrinth.com/plugin/jblockglitch
+<h3>Stops ghost items and block glitches in protected regions.</h3>
 
-Contribute: https://github.com/jruk8/JBlockGlitch
+### [Modrinth](https://modrinth.com/plugin/jblockglitch) · [Wiki](https://jruk8.github.io/JBlockGlitch/) · [GitHub](https://github.com/jruk8/JBlockGlitch)
 
-# Requirements
+</div>
 
-- Paper 26.x (tested on 26.2+)
-- Java 25
+# Features
 
-## Purpose
-The plugin contains two independent detection systems: protected-block
-glitch prevention and vanilla ghost item prevention. Pairing these two
-systems helps prevent common block glitching techniques on modern Paper
-servers.
+- **Protected-block prevention** » resends the real block state when a
+  protection plugin denies a placement, and stops movement through the
+  ghost block (`medium` and `strict` modes).
+- **Ghost item prevention** » detects vanilla ghost item techniques and
+  forces a client resync (`medium`, `hard` and `brute-force` modes).
+- **Ghost block resync** » periodically resends the blocks around
+  moving players to clear client-side ghosts.
+- **Brigadier commands** » Paper-native nodes with permission gates,
+  config-driven root aliases, and a bare-root help listing.
+- **MiniMessage everywhere** » `{braces}` for plugin placeholders,
+  angle brackets reserved for raw MiniMessage, shared color palette.
+- **Sounds** » config-driven Adventure sounds per feedback event.
+- **Update checker** » async GitHub releases check (console log, join
+  notice, `/version` line), with per-severity toggles.
+- **Reloadable** » `/jblockglitch reload` re-reads every config and
+  re-registers listeners without a restart.
 
-Both systems can be independently enabled or disabled and configured
-according to the server's performance and detection requirements.
+### Requirements
 
-## Protected-block glitch prevention
+- Server Software » [Paper 26.2+](https://papermc.io/downloads/paper)
+- Java Version » **Java 25**
+- Dependencies » **None** (PlaceholderAPI is optional, only for
+  `%placeholders%` inside the plugin messages)
 
-When a protection plugin rejects a block placement, such as WorldGuard or
-GriefPrevention, JBlockGlitch resends the real block state to the player and
-prevents movement through the client-side ghost block.
+### Commands
 
-The plugin supports both normal block placements and bucket-based placements,
-including water, lava, and powder snow. Bucket protection uses multiple event
-paths to support protection plugins that handle bucket interactions differently.
+| Command | Description |
+| --- | --- |
+| `/jblockglitch <help\|version\|reload\|config>` | Help, version, config reload, and in-game settings (alias `/jbg`). |
 
-Two detection modes are available:
+See the full [Commands Page](https://jruk8.github.io/JBlockGlitch/basics/commands/) for more info.
 
-- `medium` rubberbands the player to their previous position when a denied
-  placement is detected.
-- `strict` uses additional movement and position detection to prevent the
-  player from standing inside or moving through a denied block.
+### Permissions
 
-Denials are caught whether the protection plugin cancels the block place
-event or the interaction itself, so WorldGuard, GriefPrevention, and
-JManhunt-style lobby protection all work.
-
-## Vanilla ghost item and ghost block prevention
-
-JBlockGlitch detects common vanilla ghost item creation techniques, such as
-inventory manipulation involving F+Q, hotbar switching, dropping items, and
-block placement.
-
-Three detection modes are available:
-
-- `medium` detects common ghost item manipulation patterns.
-- `hard` additionally monitors inventory manipulation events, including
-  creative-mode inventory interactions.
-- `brute-force` continuously resynchronizes player inventories.
-
-JBlockGlitch can also periodically resynchronize the blocks immediately
-surrounding each player. This helps correct client-side ghost blocks created
-through client modifications that never result in a server-side block
-placement event.
-
-The block resynchronization checks an area around the player,
-covering a 2x2x4 region. The interval is configurable and can be
-disabled independently. Only players who moved since the previous
-resync are processed, so stationary players cost nothing.
-
-# Demos
-
-Plugin configured to `medium` detection mode. Tests done with autoclicker at 100 CPS.
-
-## Protected Region
-
-### Without the plugin
-
-This 10-second demonstration shows the block-placement glitch before
-JBlockGlitch is installed.
-
-![Block glitch without JBlockGlitch](demos/protection-without-fix.gif)
-
-### With the plugin
-
-This 10-second demonstration shows the same placement attempt with
-JBlockGlitch installed.
-
-![Block glitch fixed by JBlockGlitch](demos/protection-with-fix.gif)
-
-## Vanilla Ghost Item
-
-### Without the plugin
-
-This 10-second demonstration shows ghost item generation before
-JBlockGlitch is installed.
-
-![Vanilla ghost item glitch without JBlockGlitch](demos/ghostitem-without-fix.gif)
-
-### With the plugin
-
-This 10-second demonstration shows the ghost item generation
-failing after JBlockGlitch is installed.
-
-![Vanilla ghost item glitch fixed by JBlockGlitch](demos/ghostitem-with-fix.gif)
-
-# Commands
-
-| Command | Permission | Notes |
+| Permission | Description | Default |
 | --- | --- | --- |
-| `/jblockglitch help` | `jblockglitch.help` | Shows basic plugin documentation. |
-| `/jblockglitch reload` | `jblockglitch.reload` | Reloads `config.yml` and `messages.yml`. |
-| `/jblockglitch config [key] [value]` | `jblockglitch.config` | Views or changes settings in-game, with tab completion. |
-| `/jbg` | `jblockglitch.help` | Short alias for `/jblockglitch`. |
+| `jblockglitch.help` | Use `/jblockglitch help`. | Everyone |
+| `jblockglitch.version` | Use `/jblockglitch version`. | Everyone |
+| `jblockglitch.reload` | Use `/jblockglitch reload`. Also receives update notices. | OP |
+| `jblockglitch.config` | Use `/jblockglitch config`. | OP |
 
-The help message is configured in `messages.yml` as a multiline list. Messages
-use MiniMessage formatting by default. Set `text-format: legacy` in
-`config.yml` to use legacy `&` color codes instead.
+### Config
 
-Every message supports the `{prefix}` placeholder, backed by the `prefix`
-key in `messages.yml`, so the plugin tag can be changed in one place.
-Headers and the default prefix use the `{brand-col}` placeholder, backed
-by `brand-color` (default `#5adbc8`).
+Find `config.yml`, `messages.yml` and `sounds.yml` in `plugins/JBlockGlitch/`:
 
-Info and success messages play the `sounds.neutral` sound, errors and
-command usage play `sounds.angry`. Both are configurable in `config.yml`.
+- `updateChecker` » checks for updates, with per-severity toggles.
+- `aliases` » aliases for `/jbg` root command (needs **R**estart).
+- `defaultLanguage` » `auto` follows each client, or one forced language.
+- `protectedBlock` » denied-placement handling (`medium`, `strict`).
+- `ghostItem` » ghost item detection (`medium`, `hard`, `brute-force`)
+  and the nearby-block resync interval.
+- `colors` » color palette for messages.
+- `metrics` » anonymous bStats stats (**R**).
+- `messages.yml` / `sounds.yml` » messages and sounds.
+- `lang/<code>.yml` » per-language overlays, admin-editable (English
+  fallback for missing keys).
 
-`config.yml` provides independent options for protected-block detection,
-ghost-item detection, and nearby ghost-block resynchronization.
+See the full [Configuration Page](https://jruk8.github.io/JBlockGlitch/configuration/) for more info.
 
-Anonymous usage statistics (bStats) are enabled by default and contain no
-identifying data. Set `toggle-anonymous-statistics: false` to opt out.
+# Links
 
-The update checker compares the running version against the latest GitHub
-release and notifies players with the `jblockglitch.admin` permission. It
-can be disabled with `update-checker.enabled`, and each release severity
-(`major`, `minor`, `hotfix`) can be toggled independently.
+- [Documentation](https://jruk8.github.io/JBlockGlitch/)
+- [Discord](https://discord.com/invite/hkWmCVmWDC)
+- [GitHub](https://github.com/jruk8/JBlockGlitch)
 
-If issues occur, regenerate all configuration files and download the latest
-version. If the issue persists, report it to the issue tracker.
+### Donate ☕
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for build instructions and contributor
-setup.
-
-© 2026 jruk8. Licensed under GNU GPLv3.
+If you like my plugins, you can support my work through a [**small donation**](https://ko-fi.com/jruk). **Thanks!** 👐
