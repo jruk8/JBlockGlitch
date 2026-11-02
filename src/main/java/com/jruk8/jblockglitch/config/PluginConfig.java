@@ -102,10 +102,10 @@ public class PluginConfig extends OkaeriConfig {
     public static class Colors extends OkaeriConfig {
 
         @Comment("MiniMessage color tag for normal message bodies, used via {plain}.")
-        private String plainColor = "<#e685b5>";
+        private String plainColor = "<#c3d3e3>";
 
         @Comment("MiniMessage color tag for brand accents, used via {brand}.")
-        private String brandColor = "<#e68595>";
+        private String brandColor = "<#DB6D77>";
 
         @Comment("MiniMessage color tag for highlighted words, used via {hl}.")
         private String highlightColor = "<#85b5e6>";

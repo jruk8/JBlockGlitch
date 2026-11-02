@@ -114,8 +114,8 @@ class MessageParserTest {
             String raw = "{plain}a{brand}b{hl}c{error}d";
             Component result = parser.parse(raw, Map.of());
             String serialized = MINI_MESSAGE.serialize(result);
-            assertTrue(serialized.contains("#E685B5"));
-            assertTrue(serialized.contains("#E68595"));
+            assertTrue(serialized.contains("#C3D3E3"));
+            assertTrue(serialized.contains("#DB6D77"));
             assertTrue(serialized.contains("#85B5E6"));
             assertTrue(serialized.contains("#E68585"));
         }

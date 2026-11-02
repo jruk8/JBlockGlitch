@@ -29,8 +29,8 @@ ghostItem:
   mode: medium
   resyncTickInterval: 5
 colors:
-  plainColor: '<#e685b5>'
-  brandColor: '<#e68595>'
+  plainColor: '<#c3d3e3>'
+  brandColor: '<#DB6D77>'
   highlightColor: '<#85b5e6>'
   errorColor: '<#e68585>'
 metrics:
@@ -89,10 +89,9 @@ effect on reload.
 The message color palette. Every `messages.yml` entry uses these via
 `{plain}`, `{brand}`, `{hl}` and `{error}`, resolved when the message is
 rendered; editing a color and reloading is enough, the messages
-themselves never hardcode colors. All four share one saturation and
-value and differ in hue only: pastel pink body text, a rose brand tone
-matching the prefix gradient, pastel blue highlights, and a soft red
-for errors.
+themselves never hardcode colors. Pastel blue-gray body text, the
+signature `#DB6D77` rose brand tone matching the prefix gradient,
+pastel blue highlights, and a soft red for errors.
 
 ### `metrics`
 
