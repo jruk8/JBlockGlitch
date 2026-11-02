@@ -1,6 +1,6 @@
 package com.jruk8.jblockglitch.listeners;
 
-import com.jruk8.jblockglitch.JBlockGlitchPlugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -27,7 +27,7 @@ import java.util.UUID;
  */
 public final class GhostItemListener implements Listener {
 
-    private final JBlockGlitchPlugin plugin;
+    private final JavaPlugin plugin;
     private final ModeService modeService;
     private final GhostResyncer ghostResyncer;
     private final Map<UUID, Integer> actionCounts = new HashMap<>();
@@ -38,7 +38,7 @@ public final class GhostItemListener implements Listener {
     private BukkitTask tickTask;
     private int blockResyncTicks;
 
-    public GhostItemListener(JBlockGlitchPlugin plugin, ModeService modeService, GhostResyncer ghostResyncer) {
+    public GhostItemListener(JavaPlugin plugin, ModeService modeService, GhostResyncer ghostResyncer) {
         this.plugin = plugin;
         this.modeService = modeService;
         this.ghostResyncer = ghostResyncer;

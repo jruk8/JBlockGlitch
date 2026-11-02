@@ -1,6 +1,7 @@
 package com.jruk8.jblockglitch.listeners;
 
-import com.jruk8.jblockglitch.JBlockGlitchPlugin;
+import com.jruk8.jblockglitch.config.PluginConfig;
+import com.jruk8.jblockglitch.core.Reloadable;
 
 import java.util.Locale;
 
@@ -13,7 +14,7 @@ import java.util.Locale;
  *   <li>{@link GhostItemMode} — how ghost item attempts are detected.</li>
  * </ul>
  */
-public final class ModeService {
+public final class ModeService implements Reloadable {
 
     public enum ProtectedBlockMode {
         MEDIUM,
@@ -26,7 +27,7 @@ public final class ModeService {
         BRUTE_FORCE
     }
 
-    private final JBlockGlitchPlugin plugin;
+    private final PluginConfig pluginConfig;
 
     private boolean protectedBlockEnabled = true;
     private ProtectedBlockMode protectedBlockMode = ProtectedBlockMode.STRICT;
@@ -35,24 +36,19 @@ public final class ModeService {
     private GhostItemMode ghostItemMode = GhostItemMode.MEDIUM;
     private int ghostItemResyncTickInterval = 5;
 
-    public ModeService(JBlockGlitchPlugin plugin) {
-        this.plugin = plugin;
+    public ModeService(PluginConfig pluginConfig) {
+        this.pluginConfig = pluginConfig;
         reload();
     }
 
+    @Override
     public void reload() {
-        protectedBlockEnabled = plugin.getConfig().getBoolean(
-                "protected-block.enabled",
-                true
-        );
+        protectedBlockEnabled = pluginConfig.getProtectedBlock().isEnabled();
         protectedBlockMode = parseProtectedBlockMode();
 
-        ghostItemEnabled = plugin.getConfig().getBoolean(
-                "ghost-item.enabled",
-                true
-        );
+        ghostItemEnabled = pluginConfig.getGhostItem().isEnabled();
         ghostItemMode = parseGhostItemMode();
-        ghostItemResyncTickInterval = parseGhostItemResyncTickInterval();
+        ghostItemResyncTickInterval = pluginConfig.getGhostItem().getResyncTickInterval();
     }
 
     public boolean protectedBlockEnabled() {
@@ -76,10 +72,7 @@ public final class ModeService {
     }
 
     private ProtectedBlockMode parseProtectedBlockMode() {
-        String configured = plugin.getConfig().getString(
-                "protected-block.mode",
-                "strict"
-        );
+        String configured = pluginConfig.getProtectedBlock().getMode();
 
         return switch (configured.toLowerCase(Locale.ROOT)) {
             case "medium" -> ProtectedBlockMode.MEDIUM;
@@ -88,22 +81,12 @@ public final class ModeService {
     }
 
     private GhostItemMode parseGhostItemMode() {
-        String configured = plugin.getConfig().getString(
-                "ghost-item.mode",
-                "medium"
-        );
+        String configured = pluginConfig.getGhostItem().getMode();
 
         return switch (configured.toLowerCase(Locale.ROOT)) {
             case "hard" -> GhostItemMode.HARD;
             case "brute-force" -> GhostItemMode.BRUTE_FORCE;
             default -> GhostItemMode.MEDIUM;
         };
-    }
-
-    private int parseGhostItemResyncTickInterval() {
-        return plugin.getConfig().getInt(
-                "ghost-item.resync-tick-interval",
-                5
-        );
     }
 }
