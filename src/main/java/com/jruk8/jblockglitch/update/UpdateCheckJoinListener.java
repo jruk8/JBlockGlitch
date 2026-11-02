@@ -1,12 +1,14 @@
-package com.jruk8.jblockglitch.updatechecker;
+package com.jruk8.jblockglitch.update;
 
-import com.jruk8.jblockglitch.updatechecker.ports.UpdateCheckNotifier;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-/** Repeats a pending update notice to joining admins. */
+/**
+ * Repeats a pending update notice to joining permitted players.
+ */
 public final class UpdateCheckJoinListener implements Listener {
+
     private final UpdateCheckService service;
     private final UpdateCheckNotifier notifier;
 

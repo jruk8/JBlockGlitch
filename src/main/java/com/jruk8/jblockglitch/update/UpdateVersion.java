@@ -1,21 +1,26 @@
-package com.jruk8.jblockglitch.updatechecker;
+package com.jruk8.jblockglitch.update;
 
-import com.jruk8.jblockglitch.updatechecker.ports.UpdateCheckLogger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Three-part plugin version: major.minor.hotfix. Parsing scans the raw
- * text for x.y.z (a leading v and any trailing snapshot gibberish are
- * ignored), falls back to x.y, then x, then 1.0.0 with an error log.
+ * Three-part plugin version: major.minor.patch. Parsing scans the raw
+ * text for x.y.z (a leading v and any trailing snapshot text are
+ * ignored), falls back to x.y, then x, then 0.0.0 when no digits exist.
  */
 public record UpdateVersion(int major, int minor, int patch) {
+
     private static final Pattern TRIPLE = Pattern.compile("(\\d+)\\.(\\d+)\\.(\\d+)");
     private static final Pattern PAIR = Pattern.compile("(\\d+)\\.(\\d+)");
     private static final Pattern SINGLE = Pattern.compile("(\\d+)");
 
-    /** Parses a version from free text like a release tag. */
-    public static UpdateVersion parse(String raw, UpdateCheckLogger logger) {
+    /**
+     * Parses a version from free text like a release tag.
+     *
+     * @param raw the raw text, e.g. "v1.2.0" or "1.2.0-SNAPSHOT"
+     * @return the parsed version, or 0.0.0 when no digits are found
+     */
+    public static UpdateVersion parse(String raw) {
         String text = raw == null ? "" : raw;
         Matcher triple = TRIPLE.matcher(text);
         if (triple.find()) {
@@ -29,8 +34,7 @@ public record UpdateVersion(int major, int minor, int patch) {
         if (single.find()) {
             return new UpdateVersion(number(single.group(1)), 0, 0);
         }
-        logger.severe("Could not parse a version from '" + raw + "'; assuming 1.0.0.");
-        return new UpdateVersion(1, 0, 0);
+        return new UpdateVersion(0, 0, 0);
     }
 
     private static int number(String digits) {
@@ -41,7 +45,12 @@ public record UpdateVersion(int major, int minor, int patch) {
         }
     }
 
-    /** True when this version is strictly newer than the other. */
+    /**
+     * Returns whether this version is strictly newer than the other.
+     *
+     * @param other the version to compare against
+     * @return {@code true} when this version is newer
+     */
     public boolean isNewerThan(UpdateVersion other) {
         if (major != other.major) {
             return major > other.major;
@@ -55,6 +64,9 @@ public record UpdateVersion(int major, int minor, int patch) {
     /**
      * Highest differing component over an older version: major, minor, or
      * hotfix. Null when the versions are equal. Pure for tests.
+     *
+     * @param older the version to compare against
+     * @return the severity name, or null when equal
      */
     public String severityOver(UpdateVersion older) {
         if (major != older.major) {
