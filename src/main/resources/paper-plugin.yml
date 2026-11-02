@@ -1,0 +1,30 @@
+name: ${name}
+version: ${version}
+main: ${main}
+api-version: "${apiVersion}"
+author: ${author}
+description: ${description}
+website: ${website}
+# Paper's loader ignores Bukkit's legacy softdepend key (and without a declared
+# relationship PlaceholderAPI's classes are invisible to this plugin), so the
+# optional dependency is declared here: load after PAPI when it is present and
+# join its classpath so message placeholders resolve.
+dependencies:
+  server:
+    PlaceholderAPI:
+      load: AFTER
+      required: false
+      join-classpath: true
+permissions:
+  jblockglitch.help:
+    description: View the JBlockGlitch help listing.
+    default: true
+  jblockglitch.version:
+    description: View the JBlockGlitch version.
+    default: true
+  jblockglitch.reload:
+    description: Reload the JBlockGlitch configuration.
+    default: op
+  jblockglitch.config:
+    description: View or change JBlockGlitch settings in-game.
+    default: op
