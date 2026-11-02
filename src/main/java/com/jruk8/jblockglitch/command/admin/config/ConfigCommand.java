@@ -76,10 +76,11 @@ public class ConfigCommand {
     }
 
     public void showAll(CommandSourceStack sender) {
-        ctx.send(sender, m -> m.getConfig().getHeader(), Map.of());
+        ctx.playNeutral(sender);
+        ctx.sendMessage(sender, m -> m.getConfig().getHeader(), Map.of());
         for (ConfigKey key : ConfigKeys.ALL) {
             var tags = Map.of("key", key.path(), "value", currentValue(key));
-            ctx.send(sender, m -> m.getConfig().getEntry(), tags);
+            ctx.sendMessage(sender, m -> m.getConfig().getEntry(), tags);
         }
     }
 

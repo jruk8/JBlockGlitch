@@ -152,6 +152,16 @@ public record CommandContext(
     }
 
     /**
+     * Plays the neutral sound for the executor, once. Multi-line output
+     * (like the config listing) sends its lines silent and calls this
+     * once, so the cue never stacks into a blast.
+     * @param sender The command sender to play the sound for.
+     */
+    public void playNeutral(CommandSourceStack sender) {
+        soundPlayer.play(sender.getSender(), sounds.getNeutral());
+    }
+
+    /**
      * Convenience method for sending a message resolved from config and playing an error sound.
      * @param sender The command sender to send the message to and play the sound for.
      * @param messageSelector Function to select the message string from {@link MessagesConfig}.

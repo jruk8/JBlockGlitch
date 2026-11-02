@@ -78,13 +78,15 @@ class ConfigCommandTest {
     }
 
     @Test
-    @DisplayName("should list the header plus every key")
+    @DisplayName("should list the header plus every key with one sound")
     void shouldListAllKeys() {
         command.showAll(source);
 
+        verify(ctx).playNeutral(source);
         var selectorCaptor = ArgumentCaptor.forClass(Function.class);
         var tagsCaptor = ArgumentCaptor.forClass(Map.class);
-        verify(ctx, times(11)).send(eq(source), selectorCaptor.capture(), tagsCaptor.capture());
+        verify(ctx, times(11)).sendMessage(eq(source), selectorCaptor.capture(), tagsCaptor.capture());
+        verify(ctx, never()).send(eq(source), selectorCaptor().capture(), anyMap());
         List<String> resolved = selectorCaptor.getAllValues().stream()
                 .map(selector -> ((Function<MessagesConfig, String>) selector).apply(messages))
                 .toList();
